@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: "hot-bath-problem"
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - secretName: hot-bath-problem-certs
+  rules:
+  - host: hotbath.cjblink1.pro
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: hot-bath-problem-web-app
+          servicePort: 80

@@ -1,0 +1,19 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: hot-bath-problem-certificate
+  namespace: default
+spec:
+  secretName: hot-bath-problem-certs
+  issuerRef:
+    name: letsencrypt-prod-cluster-issuer
+    kind: ClusterIssuer
+  commonName: hotbath.cjblink1.pro
+  dnsNames:
+  - hotbath.cjblink1.pro
+  acme:
+    config:
+    - http01:
+        ingressClass: nginx
+      domains:
+      - hotbath.cjblink1.pro

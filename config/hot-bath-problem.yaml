@@ -1,0 +1,35 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: hot-bath-problem-web-app
+  annotations:
+    flux.weave.works/automated: 'true'
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      labels:
+        app: hot-bath-problem-web-app
+    spec:
+      containers:
+      - name: web-app
+        image: 'cjblink1/hot-bath-problem-web-app:master-783aab6e093282a23bd1811e262b9a773e896862'
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hot-bath-problem-web-app
+  labels:
+    name: hot-bath-problem-web-app
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+  selector:
+    app: hot-bath-problem-web-app
+  type: ClusterIP

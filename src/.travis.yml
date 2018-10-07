@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - "10.7.0"
+
+script:
+  - npm install
+  - npm run build
+  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+  - docker build -t cjblink1/hot-bath-problem-web-app:$TRAVIS_BRANCH-$TRAVIS_COMMIT .
+  - docker push cjblink1/hot-bath-problem-web-app:$TRAVIS_BRANCH-$TRAVIS_COMMIT

@@ -51,7 +51,7 @@ export class Dirichlet extends UpdateStrategy {
 export class Random extends UpdateStrategy {
 
   update() {
-    this.cell.newTemp = Math.random() * 100;
+    this.cell.newTemp = Math.random() * 255;
   }
 
 }

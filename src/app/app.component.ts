@@ -16,8 +16,8 @@ export class AppComponent implements OnInit {
   private simulationRef: Selection<Element, {}, HTMLElement, any>;
   private cols = 135;
   private rows = 58;
-  private columnWidth = 10;
-  private rowHeight = 10;
+  private columnWidth = 8;
+  private rowHeight = 8;
   private cx;
   private cy;
   private startingX;
@@ -45,8 +45,8 @@ export class AppComponent implements OnInit {
     this.buildTop();
     this.fillInterior();
 
-    this.bathtub.getCell(25, 20).setUpdateStrategy(new Dirichlet());
-    this.bathtub.getCell(25, 20).temp = 0;
+    this.bathtub.getCell(25, 60).setUpdateStrategy(new Dirichlet());
+    this.bathtub.getCell(25, 60).temp = 0;
 
     this.bathtub.linkCells();
 
@@ -90,7 +90,7 @@ export class AppComponent implements OnInit {
     for (let i = 1; i < this.cols - 1; i++) {
       const centerX = this.startingX + i * this.columnWidth;
       const centerY = this.startingY;
-      const cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 0);
+      const cell = this.bathtubFactory.createRandomBathtubCell(centerX, centerY, 0);
       this.bathtub.addCell(cell, 0, i);
     }
   }

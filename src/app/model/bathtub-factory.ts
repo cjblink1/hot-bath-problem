@@ -59,7 +59,7 @@ export class BathtubFactory {
         .attr('marker-end', 'url(#arrow)')
         .attr('stroke-width', `${(this.columnWidth + this.rowHeight) / (2 * 15)}`);
     const newCell = new BathtubCell(cellRef, centerX, centerY, updateStrategy, initialTemp);
-    newCell.addRenderStrategy(new RenderCell(false));
+    newCell.addRenderStrategy(new RenderCell(true));
     return newCell;
   }
 

@@ -42,6 +42,15 @@ export class Bathtub {
     });
   }
 
+  diffuse() {
+    for (let k = 0; k < 20; k++) {
+      this.cells.forEach(cell => {
+        cell.diffuse();
+      });
+      // console.log(this.getCell(2, 2).newTemp);
+    }
+  }
+
   commit() {
     this.cells.forEach(cell => {
       if (cell) {

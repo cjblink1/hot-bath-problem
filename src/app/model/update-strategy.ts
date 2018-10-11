@@ -9,33 +9,26 @@ export abstract class UpdateStrategy {
   }
 
   onExit() {}
-
-  abstract update();
+  update() {}
+  diffuse() {}
 
 }
 
 export class Interior extends UpdateStrategy {
 
-  update() {
-    const northTemp = this.cell.northCell.temp;
-    const southTemp = this.cell.southCell.temp;
-    const eastTemp = this.cell.eastCell.temp;
-    const westTemp = this.cell.westCell.temp;
+  private a = .25;
 
-    const tempXX = (westTemp - 2 * this.cell.temp + eastTemp);
-    const tempYY = (northTemp - 2 * this.cell.temp + southTemp);
+  // update() {
+  //   this.cell.newTemp = this.cell.temp;
+  // }
 
-    this.cell.newTemp = this.cell.temp + .25 * (tempXX + tempYY);
+  diffuse() {
+    const northTemp = this.cell.northCell.newTemp;
+    const southTemp = this.cell.southCell.newTemp;
+    const eastTemp = this.cell.eastCell.newTemp;
+    const westTemp = this.cell.westCell.newTemp;
 
-    if (this.cell.newTemp > 255) {
-      this.cell.newTemp = 255;
-    }
-
-    if (this.cell.newTemp < 0) {
-      this.cell.newTemp = 0;
-    }
-
-    // console.log(this.cell.newTemp);
+    this.cell.newTemp = (this.cell.temp + this.a * (northTemp + southTemp + eastTemp + westTemp)) / (1 + 4 * this.a);
   }
 
 }

@@ -18,6 +18,7 @@ export class BathtubCell {
     this.updateStrategy = updateStrategy;
     this.updateStrategy.onEntry(this);
     this.temp = initialTemp;
+    this.newTemp = initialTemp;
   }
 
   setNorth(northCell: BathtubCell) {
@@ -44,6 +45,10 @@ export class BathtubCell {
 
   update() {
     this.updateStrategy.update();
+  }
+
+  diffuse() {
+    this.updateStrategy.diffuse();
   }
 
   commit() {

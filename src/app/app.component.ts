@@ -14,8 +14,8 @@ export class AppComponent implements OnInit {
   title = 'hot-bath-problem';
   private bathtubRef: Selection<Element, {}, HTMLElement, any>;
   private simulationRef: Selection<Element, {}, HTMLElement, any>;
-  private cols = 135;
-  private rows = 58;
+  private cols = 100;
+  private rows = 40;
   private columnWidth = 8;
   private rowHeight = 8;
   private cx;
@@ -45,18 +45,33 @@ export class AppComponent implements OnInit {
     this.buildTop();
     this.fillInterior();
 
-    this.bathtub.getCell(25, 60).setUpdateStrategy(new Dirichlet());
-    this.bathtub.getCell(25, 60).temp = 0;
+    // this.bathtub.getCell(25, 60).setUpdateStrategy(new Dirichlet());
+    // this.bathtub.getCell(25, 60).temp = 255;
 
     this.bathtub.linkCells();
 
 
 
     d3.interval(elapsed => {
+      // const beforeUpdate = performance.now();
       this.bathtub.update();
+      // const afterUpdate = performance.now();
+      // console.log('Update took: ' + (afterUpdate - beforeUpdate));
+      // const beforeDiffuse = performance.now();
+      this.bathtub.diffuse();
+      // const afterDiffuse = performance.now();
+      // console.log('Diffuse took: ' + (afterDiffuse - beforeDiffuse));
+      // const beforeCommit = performance.now();
       this.bathtub.commit();
+      // const afterCommit = performance.now();
+      // console.log('Commit took: ' + (afterCommit - beforeCommit));
+      // const beforeRender = performance.now();
       this.bathtub.render();
-    }, 15);
+      // const end = performance.now();
+      // console.log('Render took: ' + (end - beforeRender));
+      // console.log('Total: ' + ((afterUpdate - beforeUpdate) +
+      //   (afterDiffuse - beforeDiffuse) + (afterCommit - beforeCommit) + (end - beforeRender)));
+    });
   }
 
   private buildLeftWall() {
@@ -90,7 +105,7 @@ export class AppComponent implements OnInit {
     for (let i = 1; i < this.cols - 1; i++) {
       const centerX = this.startingX + i * this.columnWidth;
       const centerY = this.startingY;
-      const cell = this.bathtubFactory.createRandomBathtubCell(centerX, centerY, 0);
+      const cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 0);
       this.bathtub.addCell(cell, 0, i);
     }
   }

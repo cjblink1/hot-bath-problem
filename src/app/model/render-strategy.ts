@@ -42,3 +42,20 @@ export class RenderCell extends RenderStrategy {
     return 'render-cell';
   }
 }
+
+export class RenderDiagonal extends RenderStrategy {
+
+  protected show(cell: BathtubCell) {
+    // throw new Error("Method not implemented.");
+  }
+
+  protected hide(cell: BathtubCell) {
+    // throw new Error("Method not implemented.");
+  }
+
+  getName() {
+    return 'render-diagonal';
+  }
+
+
+}

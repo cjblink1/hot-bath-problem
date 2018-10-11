@@ -43,15 +43,23 @@ export class BathtubFactory {
 
   private createBathtubCell(centerX: number, centerY: number, initialTemp: number, updateStrategy: UpdateStrategy) {
     const cellRef =
-    this.bathtubRef
-      .append('rect')
-      .attr('x', centerX - this.columnWidth / 2)
-      .attr('y', centerY - this.rowHeight / 2)
-      .attr('width', this.columnWidth)
-      .attr('height', this.rowHeight)
-      .attr('fill', 'white');
+      this.bathtubRef
+        .append('rect')
+        .attr('x', centerX - this.columnWidth / 2)
+        .attr('y', centerY - this.rowHeight / 2)
+        .attr('width', this.columnWidth)
+        .attr('height', this.rowHeight)
+        .attr('fill', 'white');
+    const vectorRef =
+      this.bathtubRef
+        .append('path')
+        .attr('d', `M${centerX},${centerY - this.rowHeight / 2} L
+          ${centerX},${centerY + this.rowHeight / 10}`)
+        .attr('stroke', 'red')
+        .attr('marker-end', 'url(#arrow)')
+        .attr('stroke-width', `${(this.columnWidth + this.rowHeight) / (2 * 15)}`);
     const newCell = new BathtubCell(cellRef, centerX, centerY, updateStrategy, initialTemp);
-    newCell.addRenderStrategy(new RenderCell(true));
+    newCell.addRenderStrategy(new RenderCell(false));
     return newCell;
   }
 

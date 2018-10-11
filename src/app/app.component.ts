@@ -16,8 +16,8 @@ export class AppComponent implements OnInit {
   private simulationRef: Selection<Element, {}, HTMLElement, any>;
   private cols = 100;
   private rows = 40;
-  private columnWidth = 8;
-  private rowHeight = 8;
+  private columnWidth = 12;
+  private rowHeight = 12;
   private cx;
   private cy;
   private startingX;

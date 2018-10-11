@@ -2,6 +2,7 @@ import { Selection } from 'd3';
 import { Bathtub } from './bathtub';
 import { BathtubCell } from './bathtub-cell';
 import { Dirichlet, Random, UpdateStrategy, Interior } from './update-strategy';
+import { RenderCell } from './render-strategy';
 
 
 export class BathtubFactory {
@@ -48,9 +49,10 @@ export class BathtubFactory {
       .attr('y', centerY - this.rowHeight / 2)
       .attr('width', this.columnWidth)
       .attr('height', this.rowHeight)
-      // .attr('stroke', 'paleturquoise')
       .attr('fill', 'white');
-    return new BathtubCell(cellRef, updateStrategy, initialTemp);
+    const newCell = new BathtubCell(cellRef, centerX, centerY, updateStrategy, initialTemp);
+    newCell.addRenderStrategy(new RenderCell(true));
+    return newCell;
   }
 
 }

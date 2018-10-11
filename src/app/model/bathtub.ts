@@ -47,7 +47,6 @@ export class Bathtub {
       this.cells.forEach(cell => {
         cell.diffuse();
       });
-      // console.log(this.getCell(2, 2).newTemp);
     }
   }
 

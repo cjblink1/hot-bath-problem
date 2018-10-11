@@ -1,9 +1,9 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import * as d3 from 'd3';
-import { BaseType, Selection } from 'd3';
+import { Selection } from 'd3';
 import { BathtubFactory } from './model/bathtub-factory';
 import { Bathtub } from './model/bathtub';
-import { Dirichlet } from './model/update-strategy';
+import { executeAndMeasure } from './model/utilities';
 
 @Component({
   selector: 'app-root',
@@ -29,12 +29,10 @@ export class AppComponent implements OnInit {
     this.simulationRef = d3.select('#simulation');
     this.bathtubRef = d3.select('#bathtub');
 
-    this.cx = this.simulationRef.node().clientWidth / 2;
-    this.cy = this.simulationRef.node().clientHeight / 2;
-    // console.log('cx', this.cx);
+    this.cx = this.simulationRef.node().getBoundingClientRect().width / 2;
+    this.cy = this.simulationRef.node().getBoundingClientRect().height / 2;
     this.startingX = this.cx - this.columnWidth * (this.cols / 2);
     this.startingY = this.cy - this.rowHeight * (this.rows / 2);
-    // console.log('startingx', this.startingX);
 
     this.bathtubFactory = new BathtubFactory(this.simulationRef, this.bathtubRef, this.cols, this.rows, this.columnWidth, this.rowHeight);
     this.bathtub = this.bathtubFactory.createBathtub();
@@ -45,33 +43,33 @@ export class AppComponent implements OnInit {
     this.buildTop();
     this.fillInterior();
 
-    // this.bathtub.getCell(25, 60).setUpdateStrategy(new Dirichlet());
-    // this.bathtub.getCell(25, 60).temp = 255;
-
     this.bathtub.linkCells();
 
+    const steps = [
+      {name: 'Update', value: this.bathtub.update},
+      {name: 'Diffuse', value: this.bathtub.diffuse},
+      {name: 'Commit', value: this.bathtub.commit},
+      {name: 'Render', value: this.bathtub.render}
+    ];
 
+    const timer = d3.interval(elapsed => {
 
-    d3.interval(elapsed => {
-      // const beforeUpdate = performance.now();
-      this.bathtub.update();
-      // const afterUpdate = performance.now();
-      // console.log('Update took: ' + (afterUpdate - beforeUpdate));
-      // const beforeDiffuse = performance.now();
-      this.bathtub.diffuse();
-      // const afterDiffuse = performance.now();
-      // console.log('Diffuse took: ' + (afterDiffuse - beforeDiffuse));
-      // const beforeCommit = performance.now();
-      this.bathtub.commit();
-      // const afterCommit = performance.now();
-      // console.log('Commit took: ' + (afterCommit - beforeCommit));
-      // const beforeRender = performance.now();
-      this.bathtub.render();
-      // const end = performance.now();
-      // console.log('Render took: ' + (end - beforeRender));
-      // console.log('Total: ' + ((afterUpdate - beforeUpdate) +
-      //   (afterDiffuse - beforeDiffuse) + (afterCommit - beforeCommit) + (end - beforeRender)));
-    });
+      this.execute(steps, false);
+
+      if (elapsed > 15000) {
+        timer.stop();
+      }
+    }, 20);
+  }
+
+  private execute(steps: { name: string; value: () => void; }[], measure: boolean) {
+    if (measure) {
+      const total = steps.reduce((accumulator, step) =>
+        accumulator + executeAndMeasure(step.name, step.value, this.bathtub), 0);
+      console.log('Total time: ' + total);
+    } else {
+      steps.forEach(step => step.value.apply(this.bathtub));
+    }
   }
 
   private buildLeftWall() {

@@ -12,3 +12,27 @@
   <app-root></app-root>
 </body>
 </html>
+<!-- <!DOCTYPE html>
+<meta charset="utf-8">
+<script type="text/javascript" src="//stardustjs.github.io/stardust/v0.1.1/stardust.bundle.min.js"></script>
+<canvas id="main-canvas"></canvas>
+<script type="text/javascript">
+  // Get our canvas element
+  var canvas = document.getElementById("main-canvas");
+  var width = 960;
+  var height = 500;
+
+  // Create a WebGL 2D platform on the canvas:
+  var platform = Stardust.platform("webgl-2d", canvas, width, height);
+
+  var data = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
+  var circleSpec = Stardust.mark.circle();
+  var circles = Stardust.mark.create(circleSpec, platform);
+  // circles.attr("center", (d) => [ d * 80, 250 ]);
+  // circles.attr("radius", (d) => d * 3);
+  circles.attr("center", [ 5 * 80, 250 ]);
+  circles.attr("radius",  5 * 3);
+  circles.attr("color", [ 0, 0, 0, 1 ]);
+  circles.data(['d']);
+  circles.render();
+</script> -->

@@ -1,5 +1,4 @@
 import { Selection, BaseType } from 'd3';
-import { tempToColor } from './utilities';
 import { UpdateStrategy } from './update-strategy';
 import { RenderStrategy } from './render-strategy';
 
@@ -7,9 +6,11 @@ export class BathtubCell {
 
   public centerX: number;
   public centerY: number;
-  public ref: Selection<BaseType, {}, HTMLElement, any>;
+  public vectorRef: Selection<BaseType, {}, HTMLElement, any>;
   public temp: number;
   public newTemp: number;
+  public columnWidth: number;
+  public rowHeight: number;
   public northCell: BathtubCell;
   public southCell: BathtubCell;
   public eastCell: BathtubCell;
@@ -17,19 +18,22 @@ export class BathtubCell {
   private updateStrategy: UpdateStrategy;
   private renderStrategies: Map<string, RenderStrategy>;
 
-  constructor(ref: Selection<BaseType, {}, HTMLElement, any>,
+  constructor(
     centerX: number,
     centerY: number,
+    columnWidth: number,
+    rowHeight: number,
     updateStrategy: UpdateStrategy,
     initialTemp: number) {
-    this.ref = ref;
-    this.centerX = centerX;
-    this.centerY = centerY;
-    this.updateStrategy = updateStrategy;
-    this.updateStrategy.onEntry(this);
-    this.temp = initialTemp;
-    this.newTemp = initialTemp;
-    this.renderStrategies = new Map();
+      this.centerX = centerX;
+      this.centerY = centerY;
+      this.columnWidth = columnWidth;
+      this.rowHeight = rowHeight;
+      this.updateStrategy = updateStrategy;
+      this.updateStrategy.onEntry(this);
+      this.temp = initialTemp;
+      this.newTemp = initialTemp;
+      this.renderStrategies = new Map();
   }
 
   setNorth(northCell: BathtubCell) {

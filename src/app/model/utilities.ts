@@ -1,7 +1,7 @@
 
-export function tempToColor(temp: number): string {
-  const roundedTemp = Math.round(temp);
-  return `rgb(${roundedTemp},${roundedTemp},${roundedTemp})`;
+export function tempToColor(temp: number): Array<number> {
+  const color = Math.round(temp) / 256;
+  return [color, color, color, 1.0];
 }
 
 export function executeAndMeasure(name: string, f: () => void, obj): number {

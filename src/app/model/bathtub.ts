@@ -1,15 +1,21 @@
 import { BathtubCell } from './bathtub-cell';
+import * as Stardust from 'stardust-core';
+import { WebGLCanvasPlatform2D } from 'stardust-webgl';
 
 export class Bathtub {
 
   private cols: number;
   private rows: number;
   private cells: BathtubCell[] = [];
+  private marks: Stardust.Mark[];
+  private platform: WebGLCanvasPlatform2D;
 
-  constructor(cols: number, rows: number) {
+  constructor(cols: number, rows: number, platform: WebGLCanvasPlatform2D) {
     this.cols = cols;
     this.rows = rows;
     this.createEmptyCells();
+    this.platform = platform;
+    this.marks = [];
   }
 
   private createEmptyCells() {
@@ -22,6 +28,10 @@ export class Bathtub {
     this.setCell(cell, row, column);
   }
 
+  addMark(mark: Stardust.Mark) {
+    this.marks.push(mark);
+  }
+
   linkCells() {
     for (let j = 0; j < this.rows; j++) {
       for (let i = 0; i < this.cols; i++) {
@@ -32,6 +42,10 @@ export class Bathtub {
         currentCell.setWest(this.getCell(j, ((i + this.cols + 1) % this.cols)));
       }
     }
+  }
+
+  clear() {
+    this.platform.clear();
   }
 
   update() {
@@ -59,10 +73,9 @@ export class Bathtub {
   }
 
   render() {
-    this.cells.forEach(cell => {
-      if (cell) {
-        cell.render();
-      }
+    this.marks.forEach(mark => {
+      mark.data(this.cells);
+      mark.render();
     });
   }
 

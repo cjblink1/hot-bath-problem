@@ -16,7 +16,7 @@ export abstract class UpdateStrategy {
 
 export class Interior extends UpdateStrategy {
 
-  private a = 2;
+  private a = .25;
 
   // update() {
   //   this.cell.newTemp = this.cell.temp;

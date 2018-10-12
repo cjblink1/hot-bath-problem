@@ -2,31 +2,37 @@ import { Selection } from 'd3';
 import { Bathtub } from './bathtub';
 import { BathtubCell } from './bathtub-cell';
 import { Dirichlet, Random, UpdateStrategy, Interior } from './update-strategy';
-import { RenderCell } from './render-strategy';
+import { RenderCell, RenderDiagonal } from './render-strategy';
+import * as Stardust from 'stardust-core';
+import { WebGLCanvasPlatform2D } from 'stardust-webgl';
+import { tempToColor } from './utilities';
 
 
 export class BathtubFactory {
 
-  private simulationRef: Selection<Element, {}, HTMLElement, any>;
-  private bathtubRef: Selection<Element, {}, HTMLElement, any>;
+  private platform: WebGLCanvasPlatform2D;
   private cols: number;
   private rows: number;
   private columnWidth: number;
   private rowHeight: number;
+  private cellMark: Stardust.Mark;
 
-  constructor (simulationRef: Selection<Element, {}, HTMLElement, any>,
-    bathtubRef: Selection<Element, {}, HTMLElement, any>,
+  constructor (simulationRef: HTMLCanvasElement,
     cols: number, rows: number, columnWidth: number, rowHeight: number) {
-      this.simulationRef = simulationRef;
-      this.bathtubRef = bathtubRef;
+      const width = simulationRef.getBoundingClientRect().width;
+      const height = simulationRef.getBoundingClientRect().height;
+      this.platform = new WebGLCanvasPlatform2D(simulationRef, width, height);
       this.cols = cols;
       this.rows = rows;
       this.columnWidth = columnWidth;
       this.rowHeight = rowHeight;
+      this.cellMark = Stardust.mark.create(Stardust.mark.rect(), this.platform);
   }
 
   createBathtub(): Bathtub {
-    return new Bathtub(this.cols, this.rows);
+    const newBathtub = new Bathtub(this.cols, this.rows, this.platform);
+    newBathtub.addMark(this.cellMark);
+    return newBathtub;
   }
 
   createDirichletBathtubCell(centerX: number, centerY: number, initialTemp: number) {
@@ -42,24 +48,11 @@ export class BathtubFactory {
   }
 
   private createBathtubCell(centerX: number, centerY: number, initialTemp: number, updateStrategy: UpdateStrategy) {
-    const cellRef =
-      this.bathtubRef
-        .append('rect')
-        .attr('x', centerX - this.columnWidth / 2)
-        .attr('y', centerY - this.rowHeight / 2)
-        .attr('width', this.columnWidth)
-        .attr('height', this.rowHeight)
-        .attr('fill', 'white');
-    const vectorRef =
-      this.bathtubRef
-        .append('path')
-        .attr('d', `M${centerX},${centerY - this.rowHeight / 2} L
-          ${centerX},${centerY + this.rowHeight / 10}`)
-        .attr('stroke', 'red')
-        .attr('marker-end', 'url(#arrow)')
-        .attr('stroke-width', `${(this.columnWidth + this.rowHeight) / (2 * 15)}`);
-    const newCell = new BathtubCell(cellRef, centerX, centerY, updateStrategy, initialTemp);
-    newCell.addRenderStrategy(new RenderCell(true));
+    this.cellMark.attr('p1', cell => [cell.centerX - cell.columnWidth / 2, cell.centerY - cell.rowHeight / 2])
+      .attr('p2', cell => [cell.centerX + cell.columnWidth / 2, cell.centerY + cell.rowHeight / 2])
+      .attr('color', cell => tempToColor(cell.temp));
+    const newCell = new BathtubCell(centerX, centerY,
+      this.columnWidth, this.rowHeight, updateStrategy, initialTemp);
     return newCell;
   }
 

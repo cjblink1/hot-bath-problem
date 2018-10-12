@@ -31,11 +31,11 @@ export abstract class RenderStrategy {
 export class RenderCell extends RenderStrategy {
 
   protected show(cell: BathtubCell) {
-    cell.ref.attr('fill', tempToColor(cell.temp));
+
   }
 
   protected hide(cell: BathtubCell) {
-    cell.ref.attr('visibility', 'hidden');
+    // cell.ref.attr('visibility', 'hidden');
   }
 
   getName() {
@@ -46,7 +46,13 @@ export class RenderCell extends RenderStrategy {
 export class RenderDiagonal extends RenderStrategy {
 
   protected show(cell: BathtubCell) {
-    // throw new Error("Method not implemented.");
+    const centerX = cell.centerX;
+    const centerY = cell.centerY;
+    const columnWidth = cell.columnWidth;
+    const rowHeight = cell.rowHeight;
+    cell.vectorRef.attr('d', `M${centerX},${centerY - rowHeight / 2} L
+          ${centerX},${centerY + rowHeight / 10}`)
+        .attr('stroke', 'red');
   }
 
   protected hide(cell: BathtubCell) {

@@ -48,6 +48,7 @@ export class AppComponent implements OnInit {
 
     const steps = [
       {name: 'Clear', value: this.bathtub.clear},
+      {name: 'Commit Flow', value: this.bathtub.commitFlow},
       {name: 'Update', value: this.bathtub.update},
       {name: 'Diffuse', value: this.bathtub.diffuse},
       {name: 'Commit', value: this.bathtub.commit},

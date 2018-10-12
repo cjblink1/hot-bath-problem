@@ -11,16 +11,13 @@ export abstract class UpdateStrategy {
   onExit() {}
   update() {}
   diffuse() {}
+  diffuseFlow() {}
 
 }
 
 export class Interior extends UpdateStrategy {
 
   private a = .25;
-
-  // update() {
-  //   this.cell.newTemp = this.cell.temp;
-  // }
 
   diffuse() {
     const northTemp = this.cell.northCell.newTemp;
@@ -45,6 +42,7 @@ export class Random extends UpdateStrategy {
 
   update() {
     this.cell.newTemp = Math.random() * 255;
+    this.cell.newFlowVector = [ Math.random() * 10 - 5, Math.random() * 10 - 5];
   }
 
 }

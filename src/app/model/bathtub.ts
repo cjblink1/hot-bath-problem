@@ -72,6 +72,14 @@ export class Bathtub {
     });
   }
 
+  commitFlow() {
+    this.cells.forEach(cell => {
+      if (cell) {
+        cell.commitFlow();
+      }
+    });
+  }
+
   render() {
     this.marks.forEach(mark => {
       mark.data(this.cells);

@@ -44,10 +44,16 @@ export class AppComponent implements OnInit {
     this.buildTop();
     this.fillInterior();
 
+    const centerX = this.startingX + 4 * this.columnWidth;
+    const centerY = this.startingY + 0 * this.rowHeight;
+    const cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 255, [100, 100]);
+    this.bathtub.addCell(cell, 0, 4);
+
     this.bathtub.linkCells();
 
     const steps = [
       {name: 'Clear', value: this.bathtub.clear},
+      {name: 'Diffuse Flow', value: this.bathtub.diffuseFlow},
       {name: 'Commit Flow', value: this.bathtub.commitFlow},
       {name: 'Update', value: this.bathtub.update},
       {name: 'Diffuse', value: this.bathtub.diffuse},
@@ -106,7 +112,7 @@ export class AppComponent implements OnInit {
     for (let i = 1; i < this.cols - 1; i++) {
       const centerX = this.startingX + i * this.columnWidth;
       const centerY = this.startingY;
-      const cell = this.bathtubFactory.createRandomBathtubCell(centerX, centerY, 0);
+      const cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 0);
       this.bathtub.addCell(cell, 0, i);
     }
   }

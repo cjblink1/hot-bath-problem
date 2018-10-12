@@ -64,6 +64,14 @@ export class Bathtub {
     }
   }
 
+  diffuseFlow() {
+    for (let k = 0; k < 20; k++) {
+      this.cells.forEach(cell => {
+        cell.diffuseFlow();
+      });
+    }
+  }
+
   commit() {
     this.cells.forEach(cell => {
       if (cell) {

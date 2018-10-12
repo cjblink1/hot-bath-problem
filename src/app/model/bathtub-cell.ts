@@ -66,6 +66,10 @@ export class BathtubCell {
     this.updateStrategy.diffuse();
   }
 
+  diffuseFlow() {
+    this.updateStrategy.diffuseFlow();
+  }
+
   commit() {
     this.temp = this.newTemp;
   }

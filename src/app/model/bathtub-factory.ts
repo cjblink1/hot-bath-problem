@@ -53,21 +53,21 @@ export class BathtubFactory {
 
   createBathtub(): Bathtub {
     const newBathtub = new Bathtub(this.cols, this.rows, this.platform);
-    newBathtub.addMark(this.cellMark);
+    // newBathtub.addMark(this.cellMark);
     newBathtub.addMark(this.vectorMark);
     return newBathtub;
   }
 
-  createDirichletBathtubCell(centerX: number, centerY: number, initialTemp: number) {
-    return this.createBathtubCell(centerX, centerY, initialTemp, [0, 0], new Dirichlet());
+  createDirichletBathtubCell(centerX: number, centerY: number, initialTemp: number, initialFlowVector: number[] = [0, 0]) {
+    return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, new Dirichlet());
   }
 
-  createRandomBathtubCell(centerX: number, centerY: number, initialTemp: number) {
-    return this.createBathtubCell(centerX, centerY, initialTemp, [0, 5], new Random());
+  createRandomBathtubCell(centerX: number, centerY: number, initialTemp: number, initialFlowVector: number[] = [0, 0]) {
+    return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, new Random());
   }
 
-  createInteriorBathtubCell(centerX: number, centerY: number, initialTemp: number) {
-    return this.createBathtubCell(centerX, centerY, initialTemp, [0, 1], new Interior());
+  createInteriorBathtubCell(centerX: number, centerY: number, initialTemp: number, initialFlowVector: number[] = [0, 0]) {
+    return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, new Interior());
   }
 
   private createBathtubCell(centerX: number, centerY: number,

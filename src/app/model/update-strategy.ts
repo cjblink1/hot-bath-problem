@@ -18,6 +18,7 @@ export abstract class UpdateStrategy {
 export class Interior extends UpdateStrategy {
 
   private a = .25;
+  private b = .25;
 
   diffuse() {
     const northTemp = this.cell.northCell.newTemp;
@@ -26,6 +27,20 @@ export class Interior extends UpdateStrategy {
     const westTemp = this.cell.westCell.newTemp;
 
     this.cell.newTemp = (this.cell.temp + this.a * (northTemp + southTemp + eastTemp + westTemp)) / (1 + 4 * this.a);
+  }
+
+  diffuseFlow() {
+    const northX = this.cell.northCell.flowVector[0];
+    const northY = this.cell.northCell.flowVector[1];
+    const southX = this.cell.southCell.flowVector[0];
+    const southY = this.cell.southCell.flowVector[1];
+    const eastX = this.cell.eastCell.flowVector[0];
+    const eastY = this.cell.eastCell.flowVector[1];
+    const westX = this.cell.westCell.flowVector[0];
+    const westY = this.cell.westCell.flowVector[1];
+
+    this.cell.newFlowVector[0] = (this.cell.flowVector[0] + this.b * (northX + southX + eastX + westX)) / (1 + 4 * this.b);
+    this.cell.newFlowVector[1] = (this.cell.flowVector[1] + this.b * (northY + southY + eastY + westY)) / (1 + 4 * this.b);
   }
 
 }
@@ -42,7 +57,7 @@ export class Random extends UpdateStrategy {
 
   update() {
     this.cell.newTemp = Math.random() * 255;
-    this.cell.newFlowVector = [ Math.random() * 10 - 5, Math.random() * 10 - 5];
+    // this.cell.newFlowVector = [ Math.random() * 10 - 5, Math.random() * 10 - 5];
   }
 
 }

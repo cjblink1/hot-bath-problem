@@ -3,6 +3,8 @@ import * as d3 from 'd3';
 import { BathtubFactory } from './model/bathtub-factory';
 import { Bathtub } from './model/bathtub';
 import { executeAndMeasure } from './model/utilities';
+import { BottomBoundary, LeftBoundary, RightBoundary, TopBoundary, TopLeftBoundary,
+   BottomLeftBoundary, BottomRightBoundary, TopRightBoundary } from './model/update-strategy';
 
 @Component({
   selector: 'app-root',
@@ -42,21 +44,33 @@ export class AppComponent implements OnInit {
     this.buildRightWall();
     this.buildBottom();
     this.buildTop();
+    this.buildCorners();
     this.fillInterior();
 
-    const centerX = this.startingX + 4 * this.columnWidth;
-    const centerY = this.startingY + 0 * this.rowHeight;
-    const cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 255, [100, 100]);
+    let centerX = this.startingX + 4 * this.columnWidth;
+    let centerY = this.startingY + 0 * this.rowHeight;
+    let cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 255, [.25, .1]);
     this.bathtub.addCell(cell, 0, 4);
+
+    centerX = this.startingX + 5 * this.columnWidth;
+    centerY = this.startingY + 0 * this.rowHeight;
+    cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 255, [.2, 1]);
+    this.bathtub.addCell(cell, 0, 5);
 
     this.bathtub.linkCells();
 
     const steps = [
       {name: 'Clear', value: this.bathtub.clear},
       {name: 'Diffuse Flow', value: this.bathtub.diffuseFlow},
+      {name: 'Project', value: this.bathtub.project},
+      {name: 'Commit Flow', value: this.bathtub.commitFlow},
+      {name: 'Advect Flow', value: this.bathtub.advectFlow},
+      {name: 'Project', value: this.bathtub.project},
       {name: 'Commit Flow', value: this.bathtub.commitFlow},
       {name: 'Update', value: this.bathtub.update},
       {name: 'Diffuse', value: this.bathtub.diffuse},
+      {name: 'Commit', value: this.bathtub.commit},
+      {name: 'Advect', value: this.bathtub.advect},
       {name: 'Commit', value: this.bathtub.commit},
       {name: 'Render', value: this.bathtub.render}
     ];
@@ -82,28 +96,28 @@ export class AppComponent implements OnInit {
   }
 
   private buildLeftWall() {
-    for (let i = 0; i < this.rows - 1; i++) {
+    for (let i = 1; i < this.rows - 1; i++) {
       const centerX = this.startingX;
       const centerY = this.startingY + i * this.rowHeight;
-      const cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 0);
+      const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new LeftBoundary());
       this.bathtub.addCell(cell, i, 0);
     }
   }
 
   private buildRightWall() {
-    for (let i = 0; i < this.rows - 1; i++) {
+    for (let i = 1; i < this.rows - 1; i++) {
       const centerX = this.startingX + (this.cols - 1) * this.columnWidth;
       const centerY = this.startingY + i * this.rowHeight;
-      const cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 0);
+      const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new RightBoundary());
       this.bathtub.addCell(cell, i, this.cols - 1);
     }
   }
 
   private buildBottom() {
-    for (let i = 0; i < this.cols; i++) {
+    for (let i = 1; i < this.cols - 1; i++) {
       const centerX = this.startingX + i * this.columnWidth;
       const centerY = this.startingY + (this.rows - 1) * this.rowHeight;
-      const cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 0);
+      const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new BottomBoundary());
       this.bathtub.addCell(cell, this.rows - 1, i);
     }
   }
@@ -112,9 +126,33 @@ export class AppComponent implements OnInit {
     for (let i = 1; i < this.cols - 1; i++) {
       const centerX = this.startingX + i * this.columnWidth;
       const centerY = this.startingY;
-      const cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 0);
+      const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new TopBoundary());
       this.bathtub.addCell(cell, 0, i);
     }
+  }
+
+  private buildCorners() {
+
+    let centerX = this.startingX;
+    let centerY = this.startingY;
+    let cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new TopLeftBoundary());
+    this.bathtub.addCell(cell, 0, 0);
+
+    centerX = this.startingX;
+    centerY = this.startingY + (this.rows - 1) * this.rowHeight;
+    cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new BottomLeftBoundary());
+    this.bathtub.addCell(cell, this.rows - 1, 0);
+
+    centerX = this.startingX + (this.cols - 1) * this.columnWidth;
+    centerY = this.startingY + (this.rows - 1) * this.rowHeight;
+    cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new BottomRightBoundary());
+    this.bathtub.addCell(cell, this.rows - 1, this.cols - 1);
+
+    centerX = this.startingX + (this.cols - 1) * this.columnWidth;
+    centerY = this.startingY;
+    cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new TopRightBoundary());
+    this.bathtub.addCell(cell, 0, this.cols - 1);
+
   }
 
   private fillInterior() {
@@ -122,7 +160,7 @@ export class AppComponent implements OnInit {
       for (let i = 1; i < this.cols - 1; i++) {
         const centerX = this.startingX + i * this.columnWidth;
         const centerY = this.startingY + j * this.rowHeight;
-        const cell = this.bathtubFactory.createInteriorBathtubCell(centerX, centerY, 255);
+        const cell = this.bathtubFactory.createInteriorBathtubCell(centerX, centerY, 50);
         this.bathtub.addCell(cell, j, i);
       }
     }

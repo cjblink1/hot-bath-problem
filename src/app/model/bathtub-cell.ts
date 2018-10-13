@@ -8,6 +8,8 @@ export class BathtubCell {
   public newTemp: number;
   public flowVector: number[];
   public newFlowVector: number[];
+  public div: number;
+  public p: number;
   public columnWidth: number;
   public rowHeight: number;
   public northCell: BathtubCell;
@@ -34,6 +36,8 @@ export class BathtubCell {
       this.newTemp = initialTemp;
       this.flowVector = initialFlowVector;
       this.newFlowVector = initialFlowVector;
+      this.p = 0;
+      this.div = 0;
   }
 
   setNorth(northCell: BathtubCell) {
@@ -66,8 +70,36 @@ export class BathtubCell {
     this.updateStrategy.diffuse();
   }
 
+  shouldAdvect(): boolean {
+    return this.updateStrategy.shouldAdvect();
+  }
+
+  setBoundary() {
+    this.updateStrategy.setBoundary();
+  }
+
   diffuseFlow() {
     this.updateStrategy.diffuseFlow();
+  }
+
+  shouldAdvectFlow(): boolean {
+    return this.updateStrategy.shouldAdvectFlow();
+  }
+
+  setFlowBoundary() {
+    this.updateStrategy.setFlowBoundary();
+  }
+
+  calculateDiv() {
+    this.updateStrategy.calculateDiv();
+  }
+
+  calculateP() {
+    this.updateStrategy.calculateP();
+  }
+
+  correctFlow() {
+    this.updateStrategy.correctFlow();
   }
 
   commit() {

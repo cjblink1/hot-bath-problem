@@ -53,7 +53,7 @@ export class BathtubFactory {
 
   createBathtub(): Bathtub {
     const newBathtub = new Bathtub(this.cols, this.rows, this.platform);
-    // newBathtub.addMark(this.cellMark);
+    newBathtub.addMark(this.cellMark);
     newBathtub.addMark(this.vectorMark);
     return newBathtub;
   }
@@ -70,7 +70,7 @@ export class BathtubFactory {
     return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, new Interior());
   }
 
-  private createBathtubCell(centerX: number, centerY: number,
+  createBathtubCell(centerX: number, centerY: number,
     initialTemp: number, initialFlowVector: number[], updateStrategy: UpdateStrategy) {
     return new BathtubCell(centerX, centerY, this.columnWidth, this.rowHeight, updateStrategy, initialTemp, initialFlowVector);
   }

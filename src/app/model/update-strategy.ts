@@ -12,13 +12,21 @@ export abstract class UpdateStrategy {
   update() {}
   diffuse() {}
   diffuseFlow() {}
+  calculateDiv() {}
+  calculateP() {}
+  correctFlow() {}
+  shouldAdvect = () => false;
+  shouldAdvectFlow = () => false;
+  setBoundary() {}
+  setFlowBoundary() {}
 
 }
 
 export class Interior extends UpdateStrategy {
 
-  private a = .25;
-  private b = .25;
+  private a = .003;
+  private b = .003;
+  private h = .01;
 
   diffuse() {
     const northTemp = this.cell.northCell.newTemp;
@@ -43,6 +51,40 @@ export class Interior extends UpdateStrategy {
     this.cell.newFlowVector[1] = (this.cell.flowVector[1] + this.b * (northY + southY + eastY + westY)) / (1 + 4 * this.b);
   }
 
+  shouldAdvect = () => true;
+  shouldAdvectFlow = () => true;
+
+  calculateDiv() {
+
+    const northY = this.cell.northCell.newFlowVector[1];
+    const southY = this.cell.southCell.newFlowVector[1];
+    const eastX = this.cell.eastCell.newFlowVector[0];
+    const westX = this.cell.westCell.newFlowVector[0];
+
+    this.cell.div = -0.5 * this.h * (eastX - westX + southY - northY);
+    this.cell.p = 0;
+  }
+
+  calculateP() {
+
+    const northP = this.cell.northCell.p;
+    const southP = this.cell.southCell.p;
+    const eastP = this.cell.eastCell.p;
+    const westP = this.cell.westCell.p;
+
+    this.cell.p = (this.cell.div + northP + southP + eastP + westP) / 4;
+  }
+
+  correctFlow() {
+    const northP = this.cell.northCell.p;
+    const southP = this.cell.southCell.p;
+    const eastP = this.cell.eastCell.p;
+    const westP = this.cell.westCell.p;
+
+    this.cell.newFlowVector[0] -= 0.5 * (eastP - westP) / this.h;
+    this.cell.newFlowVector[1] -= 0.5 * (southP - northP) / this.h;
+  }
+
 }
 
 export class Dirichlet extends UpdateStrategy {
@@ -57,7 +99,169 @@ export class Random extends UpdateStrategy {
 
   update() {
     this.cell.newTemp = Math.random() * 255;
-    // this.cell.newFlowVector = [ Math.random() * 10 - 5, Math.random() * 10 - 5];
   }
 
+}
+
+export class BottomBoundary extends UpdateStrategy {
+
+
+  setBoundary() {
+    this.cell.newTemp = this.cell.northCell.newTemp;
+  }
+
+  calculateDiv() {
+    this.cell.div = this.cell.northCell.div;
+    this.cell.p = 0;
+  }
+
+  calculateP() {
+    // this.cell.p = this.cell.northCell.p;
+  }
+
+  correctFlow() {
+    this.cell.newFlowVector = [this.cell.northCell.newFlowVector[0], 0];
+  }
+
+}
+
+export class LeftBoundary extends UpdateStrategy {
+
+
+  setBoundary() {
+    this.cell.newTemp = this.cell.eastCell.newTemp;
+  }
+
+  calculateDiv() {
+    this.cell.div = this.cell.eastCell.div;
+    this.cell.p = 0;
+  }
+
+  calculateP() {
+    this.cell.p = this.cell.eastCell.p;
+  }
+
+  correctFlow() {
+    this.cell.newFlowVector = [0, this.cell.eastCell.newFlowVector[1]];
+  }
+}
+
+export class RightBoundary extends UpdateStrategy {
+
+  setBoundary() {
+    this.cell.newTemp = this.cell.westCell.newTemp;
+  }
+
+  calculateDiv() {
+    this.cell.div = this.cell.westCell.div;
+    this.cell.p = 0;
+  }
+
+  calculateP() {
+    this.cell.p = this.cell.westCell.p;
+  }
+
+  correctFlow() {
+    this.cell.newFlowVector = [0, this.cell.westCell.newFlowVector[1]];
+  }
+}
+
+export class TopBoundary extends UpdateStrategy {
+
+  setBoundary() {
+    this.cell.newTemp = this.cell.southCell.newTemp;
+  }
+
+  calculateDiv() {
+    this.cell.div = this.cell.southCell.div;
+    this.cell.p = 0;
+  }
+
+  calculateP() {
+    this.cell.p = this.cell.southCell.p;
+  }
+
+  correctFlow() {
+    this.cell.newFlowVector = [this.cell.southCell.newFlowVector[0], 0];
+  }
+}
+
+export class TopLeftBoundary extends UpdateStrategy {
+
+  setBoundary() {
+    this.cell.newTemp = .5 * (this.cell.eastCell.newTemp + this.cell.southCell.newTemp);
+  }
+
+  calculateDiv() {
+    this.cell.div = .5 * (this.cell.eastCell.div + this.cell.southCell.div);
+    this.cell.p = 0;
+  }
+
+  calculateP() {
+    this.cell.p = .5 * (this.cell.eastCell.p + this.cell.southCell.p);
+  }
+
+  correctFlow() {
+    this.cell.newFlowVector = [this.cell.eastCell.newFlowVector[0], this.cell.southCell.newFlowVector[1]];
+  }
+}
+
+export class TopRightBoundary extends UpdateStrategy {
+
+  setBoundary() {
+    this.cell.newTemp = .5 * (this.cell.westCell.newTemp + this.cell.southCell.newTemp);
+  }
+
+  calculateDiv() {
+    this.cell.div = .5 * (this.cell.westCell.div + this.cell.southCell.div);
+    this.cell.p = 0;
+  }
+
+  calculateP() {
+    this.cell.p = .5 * (this.cell.westCell.p + this.cell.southCell.p);
+  }
+
+  correctFlow() {
+    this.cell.newFlowVector = [this.cell.westCell.newFlowVector[0], this.cell.southCell.newFlowVector[1]];
+  }
+}
+
+export class BottomLeftBoundary extends UpdateStrategy {
+
+  setBoundary() {
+    this.cell.newTemp = .5 * (this.cell.eastCell.newTemp + this.cell.northCell.newTemp);
+  }
+
+  calculateDiv() {
+    this.cell.div = .5 * (this.cell.eastCell.div + this.cell.northCell.div);
+    this.cell.p = 0;
+  }
+
+  calculateP() {
+    this.cell.p = .5 * (this.cell.eastCell.p + this.cell.northCell.p);
+  }
+
+  correctFlow() {
+    this.cell.newFlowVector = [this.cell.eastCell.newFlowVector[0], this.cell.northCell.newFlowVector[1]];
+  }
+}
+
+export class BottomRightBoundary extends UpdateStrategy {
+
+  setBoundary() {
+    this.cell.newTemp = .5 * (this.cell.westCell.newTemp + this.cell.northCell.newTemp);
+  }
+
+  calculateDiv() {
+    this.cell.div = .5 * (this.cell.westCell.div + this.cell.northCell.div);
+    this.cell.p = 0;
+  }
+
+  calculateP() {
+    this.cell.p = .5 * (this.cell.westCell.p + this.cell.northCell.p);
+  }
+
+  correctFlow() {
+    this.cell.newFlowVector = [this.cell.westCell.newFlowVector[0], this.cell.northCell.newFlowVector[1]];
+  }
 }

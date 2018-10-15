@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, NgZone } from '@angular/core';
 import * as d3 from 'd3';
 import { BathtubFactory } from './model/bathtub-factory';
 import { Bathtub } from './model/bathtub';
@@ -24,6 +24,7 @@ export class AppComponent implements OnInit {
   private startingY;
   private bathtubFactory: BathtubFactory;
   private bathtub: Bathtub;
+  protected avgTemp: number;
 
   ngOnInit(): void {
     this.simulationRef = d3.select<HTMLCanvasElement, {}>('#simulation').node();
@@ -71,7 +72,7 @@ export class AppComponent implements OnInit {
     const timer = d3.interval(elapsed => {
 
       this.execute(steps, false);
-
+      this.updateAvgTemp();
       // if (elapsed > 15000) {
       //   timer.stop();
       // }
@@ -154,5 +155,9 @@ export class AppComponent implements OnInit {
     const withinXBounds = cellX >= 0 && cellX < this.cols;
     const withinYBounds = cellY >= 0 && cellY < this.rows;
     return withinXBounds && withinYBounds;
+  }
+
+  private updateAvgTemp() {
+    this.avgTemp = Math.round(this.bathtub.getAvgTemp());
   }
 }

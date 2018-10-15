@@ -202,4 +202,8 @@ export class Bathtub {
     this.getCell(row, column).toggle();
   }
 
+  getAvgTemp() {
+    return this.cells.reduce((accumulator, cell) => accumulator + cell.temp, 0) / this.cells.length;
+  }
+
 }

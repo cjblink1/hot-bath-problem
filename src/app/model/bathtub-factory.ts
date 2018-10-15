@@ -58,10 +58,6 @@ export class BathtubFactory {
     return newBathtub;
   }
 
-  createDirichletBathtubCell(centerX: number, centerY: number, initialTemp: number, initialFlowVector: number[] = [0, 0]) {
-    return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, new Dirichlet());
-  }
-
   createRandomBathtubCell(centerX: number, centerY: number, initialTemp: number, initialFlowVector: number[] = [0, 0]) {
     return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, new Random());
   }

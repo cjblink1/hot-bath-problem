@@ -4,7 +4,7 @@ import { BathtubFactory } from './model/bathtub-factory';
 import { Bathtub } from './model/bathtub';
 import { executeAndMeasure } from './model/utilities';
 import { BottomBoundary, LeftBoundary, RightBoundary, TopBoundary, TopLeftBoundary,
-   BottomLeftBoundary, BottomRightBoundary, TopRightBoundary } from './model/update-strategy';
+   BottomLeftBoundary, BottomRightBoundary, TopRightBoundary, Interior, UpdateStrategy, Dirichlet, Source } from './model/update-strategy';
 
 @Component({
   selector: 'app-root',
@@ -47,17 +47,10 @@ export class AppComponent implements OnInit {
     this.buildCorners();
     this.fillInterior();
 
-    let centerX = this.startingX + 4 * this.columnWidth;
-    let centerY = this.startingY + 0 * this.rowHeight;
-    let cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 255, [.25, .1]);
-    this.bathtub.addCell(cell, 0, 4);
-
-    centerX = this.startingX + 5 * this.columnWidth;
-    centerY = this.startingY + 0 * this.rowHeight;
-    cell = this.bathtubFactory.createDirichletBathtubCell(centerX, centerY, 255, [.2, 1]);
-    this.bathtub.addCell(cell, 0, 5);
-
     this.bathtub.linkCells();
+
+    d3.select('#simulation').
+      on('click', () => this.handleClick(d3.mouse(this.simulationRef)));
 
     const steps = [
       {name: 'Clear', value: this.bathtub.clear},
@@ -97,72 +90,69 @@ export class AppComponent implements OnInit {
 
   private buildLeftWall() {
     for (let i = 1; i < this.rows - 1; i++) {
-      const centerX = this.startingX;
-      const centerY = this.startingY + i * this.rowHeight;
-      const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new LeftBoundary());
-      this.bathtub.addCell(cell, i, 0);
+      this.createAndAddCell(i, 0, 0, [0, 0], new LeftBoundary());
     }
   }
 
   private buildRightWall() {
     for (let i = 1; i < this.rows - 1; i++) {
-      const centerX = this.startingX + (this.cols - 1) * this.columnWidth;
-      const centerY = this.startingY + i * this.rowHeight;
-      const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new RightBoundary());
-      this.bathtub.addCell(cell, i, this.cols - 1);
+      this.createAndAddCell(i, this.cols - 1, 0, [0, 0], new RightBoundary());
     }
   }
 
   private buildBottom() {
     for (let i = 1; i < this.cols - 1; i++) {
-      const centerX = this.startingX + i * this.columnWidth;
-      const centerY = this.startingY + (this.rows - 1) * this.rowHeight;
-      const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new BottomBoundary());
-      this.bathtub.addCell(cell, this.rows - 1, i);
+      this.createAndAddCell(this.rows - 1, i, 0, [0, 0], new BottomBoundary());
     }
   }
 
   private buildTop() {
     for (let i = 1; i < this.cols - 1; i++) {
-      const centerX = this.startingX + i * this.columnWidth;
-      const centerY = this.startingY;
-      const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new TopBoundary());
-      this.bathtub.addCell(cell, 0, i);
+      this.createAndAddCell(0, i, 0, [0, 0], new TopBoundary(), new Source(255, [0, 1]));
     }
   }
 
   private buildCorners() {
-
-    let centerX = this.startingX;
-    let centerY = this.startingY;
-    let cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new TopLeftBoundary());
-    this.bathtub.addCell(cell, 0, 0);
-
-    centerX = this.startingX;
-    centerY = this.startingY + (this.rows - 1) * this.rowHeight;
-    cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new BottomLeftBoundary());
-    this.bathtub.addCell(cell, this.rows - 1, 0);
-
-    centerX = this.startingX + (this.cols - 1) * this.columnWidth;
-    centerY = this.startingY + (this.rows - 1) * this.rowHeight;
-    cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new BottomRightBoundary());
-    this.bathtub.addCell(cell, this.rows - 1, this.cols - 1);
-
-    centerX = this.startingX + (this.cols - 1) * this.columnWidth;
-    centerY = this.startingY;
-    cell = this.bathtubFactory.createBathtubCell(centerX, centerY, 0, [0, 0], new TopRightBoundary());
-    this.bathtub.addCell(cell, 0, this.cols - 1);
-
+    this.createAndAddCell(0, 0, 0, [0, 0], new TopLeftBoundary());
+    this.createAndAddCell(this.rows - 1, 0, 0, [0, 0], new BottomLeftBoundary());
+    this.createAndAddCell(this.rows - 1, this.cols - 1, 0, [0, 0], new BottomRightBoundary());
+    this.createAndAddCell(0, this.cols - 1, 0, [0, 0], new TopRightBoundary());
   }
 
   private fillInterior() {
     for (let j = 1; j < this.rows - 1; j++) {
       for (let i = 1; i < this.cols - 1; i++) {
-        const centerX = this.startingX + i * this.columnWidth;
-        const centerY = this.startingY + j * this.rowHeight;
-        const cell = this.bathtubFactory.createInteriorBathtubCell(centerX, centerY, 50);
-        this.bathtub.addCell(cell, j, i);
+        this.createAndAddCell(j, i, 50, [0, 0], new Interior());
       }
     }
+  }
+
+  private createAndAddCell(row: number, col: number, temp: number, flowVector: [number, number], ...updateStrategies: UpdateStrategy[]) {
+    const centerX = this.startingX + col * this.columnWidth;
+    const centerY = this.startingY + row * this.rowHeight;
+    const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, temp, flowVector, ...updateStrategies);
+    this.bathtub.addCell(cell, row, col);
+  }
+
+  private handleClick(canvasCoords: [number, number]) {
+    const [withinBounds, cellX, cellY] = this.translateCanvasCoordsToCellCoords(canvasCoords);
+    if (withinBounds) {
+      console.log(`Toggling ${cellY}, ${cellX}`);
+      this.bathtub.toggle(cellY, cellX);
+    }
+  }
+
+  private translateCanvasCoordsToCellCoords([canvasX, canvasY]): [boolean, number, number] {
+
+    const cellX = Math.floor((canvasX - this.startingX + this.columnWidth / 2) / this.columnWidth);
+    const cellY = Math.floor((canvasY - this.startingY + this.rowHeight / 2) / this.rowHeight);
+
+    return [this.withinBounds(cellX, cellY), cellX, cellY];
+  }
+
+  private withinBounds(cellX, cellY): boolean {
+    const withinXBounds = cellX >= 0 && cellX < this.cols;
+    const withinYBounds = cellY >= 0 && cellY < this.rows;
+    return withinXBounds && withinYBounds;
   }
 }

@@ -24,8 +24,8 @@ export abstract class UpdateStrategy {
 
 export class Interior extends UpdateStrategy {
 
-  private a = .003;
-  private b = .003;
+  private a = .005;
+  private b = .005;
   private h = .01;
 
   diffuse() {
@@ -88,9 +88,25 @@ export class Interior extends UpdateStrategy {
 }
 
 export class Dirichlet extends UpdateStrategy {
-
   update() {
     this.cell.newTemp = this.cell.temp;
+  }
+}
+
+export class Source extends UpdateStrategy {
+
+  private temp: number;
+  private flowVector: [number, number];
+
+  constructor(temp: number, flowVector: [number, number]) {
+    super();
+    this.temp = temp;
+    this.flowVector = flowVector;
+  }
+
+  update() {
+    this.cell.newTemp = this.temp;
+    this.cell.newFlowVector = this.flowVector;
   }
 
 }
@@ -116,7 +132,7 @@ export class BottomBoundary extends UpdateStrategy {
   }
 
   calculateP() {
-    // this.cell.p = this.cell.northCell.p;
+    this.cell.p = this.cell.northCell.p;
   }
 
   correctFlow() {
@@ -202,7 +218,9 @@ export class TopLeftBoundary extends UpdateStrategy {
   }
 
   correctFlow() {
-    this.cell.newFlowVector = [this.cell.eastCell.newFlowVector[0], this.cell.southCell.newFlowVector[1]];
+    const avgX = this.cell.eastCell.newFlowVector[0] + this.cell.southCell.newFlowVector[0];
+    const avgY = this.cell.eastCell.newFlowVector[1] + this.cell.southCell.newFlowVector[1];
+    this.cell.newFlowVector = [avgX, avgY];
   }
 }
 
@@ -222,7 +240,9 @@ export class TopRightBoundary extends UpdateStrategy {
   }
 
   correctFlow() {
-    this.cell.newFlowVector = [this.cell.westCell.newFlowVector[0], this.cell.southCell.newFlowVector[1]];
+    const avgX = this.cell.westCell.newFlowVector[0] + this.cell.southCell.newFlowVector[0];
+    const avgY = this.cell.westCell.newFlowVector[1] + this.cell.southCell.newFlowVector[1];
+    this.cell.newFlowVector = [avgX, avgY];
   }
 }
 
@@ -242,7 +262,9 @@ export class BottomLeftBoundary extends UpdateStrategy {
   }
 
   correctFlow() {
-    this.cell.newFlowVector = [this.cell.eastCell.newFlowVector[0], this.cell.northCell.newFlowVector[1]];
+    const avgX = this.cell.eastCell.newFlowVector[0] + this.cell.northCell.newFlowVector[0];
+    const avgY = this.cell.eastCell.newFlowVector[1] + this.cell.northCell.newFlowVector[1];
+    this.cell.newFlowVector = [avgX, avgY];
   }
 }
 
@@ -262,6 +284,8 @@ export class BottomRightBoundary extends UpdateStrategy {
   }
 
   correctFlow() {
-    this.cell.newFlowVector = [this.cell.westCell.newFlowVector[0], this.cell.northCell.newFlowVector[1]];
+    const avgX = this.cell.westCell.newFlowVector[0] + this.cell.northCell.newFlowVector[0];
+    const avgY = this.cell.westCell.newFlowVector[1] + this.cell.northCell.newFlowVector[1];
+    this.cell.newFlowVector = [avgX, avgY];
   }
 }

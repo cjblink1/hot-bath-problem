@@ -16,22 +16,27 @@ export class BathtubCell {
   public southCell: BathtubCell;
   public eastCell: BathtubCell;
   public westCell: BathtubCell;
-  private updateStrategy: UpdateStrategy;
+  private updateStrategies: UpdateStrategy[];
+  private currentStrategy: UpdateStrategy;
+  private currentStrategyIndex: number;
 
   constructor(
     centerX: number,
     centerY: number,
     columnWidth: number,
     rowHeight: number,
-    updateStrategy: UpdateStrategy,
     initialTemp: number,
-    initialFlowVector: number[]) {
+    initialFlowVector: number[],
+    ...updateStrategies: UpdateStrategy[]
+    ) {
       this.centerX = centerX;
       this.centerY = centerY;
       this.columnWidth = columnWidth;
       this.rowHeight = rowHeight;
-      this.updateStrategy = updateStrategy;
-      this.updateStrategy.onEntry(this);
+      this.updateStrategies = updateStrategies;
+      this.currentStrategyIndex = 0;
+      this.currentStrategy = this.updateStrategies[this.currentStrategyIndex];
+      this.currentStrategy.onEntry(this);
       this.temp = initialTemp;
       this.newTemp = initialTemp;
       this.flowVector = initialFlowVector;
@@ -56,50 +61,51 @@ export class BathtubCell {
     this.westCell = westCell;
   }
 
-  setUpdateStrategy(updateStrategy: UpdateStrategy) {
-    this.updateStrategy.onExit();
-    this.updateStrategy = updateStrategy;
-    this.updateStrategy.onEntry(this);
+  toggle() {
+    this.currentStrategy.onExit();
+    this.currentStrategyIndex = (this.currentStrategyIndex + 1) % this.updateStrategies.length;
+    this.currentStrategy = this.updateStrategies[this.currentStrategyIndex];
+    this.currentStrategy.onEntry(this);
   }
 
   update() {
-    this.updateStrategy.update();
+    this.currentStrategy.update();
   }
 
   diffuse() {
-    this.updateStrategy.diffuse();
+    this.currentStrategy.diffuse();
   }
 
   shouldAdvect(): boolean {
-    return this.updateStrategy.shouldAdvect();
+    return this.currentStrategy.shouldAdvect();
   }
 
   setBoundary() {
-    this.updateStrategy.setBoundary();
+    this.currentStrategy.setBoundary();
   }
 
   diffuseFlow() {
-    this.updateStrategy.diffuseFlow();
+    this.currentStrategy.diffuseFlow();
   }
 
   shouldAdvectFlow(): boolean {
-    return this.updateStrategy.shouldAdvectFlow();
+    return this.currentStrategy.shouldAdvectFlow();
   }
 
   setFlowBoundary() {
-    this.updateStrategy.setFlowBoundary();
+    this.currentStrategy.setFlowBoundary();
   }
 
   calculateDiv() {
-    this.updateStrategy.calculateDiv();
+    this.currentStrategy.calculateDiv();
   }
 
   calculateP() {
-    this.updateStrategy.calculateP();
+    this.currentStrategy.calculateP();
   }
 
   correctFlow() {
-    this.updateStrategy.correctFlow();
+    this.currentStrategy.correctFlow();
   }
 
   commit() {

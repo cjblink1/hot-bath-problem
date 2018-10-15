@@ -198,4 +198,8 @@ export class Bathtub {
     this.cells[row * this.cols + column] = cell;
   }
 
+  toggle(row: number, column: number) {
+    this.getCell(row, column).toggle();
+  }
+
 }

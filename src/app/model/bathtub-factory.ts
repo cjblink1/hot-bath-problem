@@ -71,8 +71,8 @@ export class BathtubFactory {
   }
 
   createBathtubCell(centerX: number, centerY: number,
-    initialTemp: number, initialFlowVector: number[], updateStrategy: UpdateStrategy) {
-    return new BathtubCell(centerX, centerY, this.columnWidth, this.rowHeight, updateStrategy, initialTemp, initialFlowVector);
+    initialTemp: number, initialFlowVector: number[], ...updateStrategies: UpdateStrategy[]) {
+    return new BathtubCell(centerX, centerY, this.columnWidth, this.rowHeight, initialTemp, initialFlowVector, ...updateStrategies);
   }
 
 }

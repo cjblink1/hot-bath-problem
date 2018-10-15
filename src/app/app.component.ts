@@ -25,6 +25,7 @@ export class AppComponent implements OnInit {
   private bathtubFactory: BathtubFactory;
   private bathtub: Bathtub;
   protected avgTemp: number;
+  protected stddevTemp = 4;
 
   ngOnInit(): void {
     this.simulationRef = d3.select<HTMLCanvasElement, {}>('#simulation').node();
@@ -72,7 +73,7 @@ export class AppComponent implements OnInit {
     const timer = d3.interval(elapsed => {
 
       this.execute(steps, false);
-      this.updateAvgTemp();
+      this.updateStats();
       // if (elapsed > 15000) {
       //   timer.stop();
       // }
@@ -157,7 +158,11 @@ export class AppComponent implements OnInit {
     return withinXBounds && withinYBounds;
   }
 
-  private updateAvgTemp() {
-    this.avgTemp = Math.round(this.bathtub.getAvgTemp());
+  private updateStats() {
+    const avg = this.bathtub.getAvgTemp();
+    const stddev = this.bathtub.getStdDevTemp(this.avgTemp);
+
+    this.avgTemp = Math.round(avg);
+    this.stddevTemp = Math.round(stddev);
   }
 }

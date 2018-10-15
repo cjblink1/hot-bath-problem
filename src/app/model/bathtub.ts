@@ -206,4 +206,8 @@ export class Bathtub {
     return this.cells.reduce((accumulator, cell) => accumulator + cell.temp, 0) / this.cells.length;
   }
 
+  getStdDevTemp(avgTemp: number) {
+    return Math.sqrt(this.cells.reduce((accumulator, cell) => accumulator + Math.pow(cell.temp - avgTemp, 2), 0) / this.cells.length);
+  }
+
 }

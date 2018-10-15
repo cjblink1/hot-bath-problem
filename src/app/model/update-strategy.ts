@@ -24,8 +24,8 @@ export abstract class UpdateStrategy {
 
 export class Interior extends UpdateStrategy {
 
-  private a = .005;
-  private b = .005;
+  private a = .01;
+  private b = .01;
   private h = .01;
 
   diffuse() {
@@ -88,8 +88,48 @@ export class Interior extends UpdateStrategy {
 }
 
 export class Dirichlet extends UpdateStrategy {
+
+  private temp: number;
+  private h = .01;
+
+  constructor(temp: number) {
+    super();
+    this.temp = temp;
+  }
+
   update() {
-    this.cell.newTemp = this.cell.temp;
+    this.cell.newTemp = this.temp;
+    this.cell.newFlowVector = [0, 0];
+  }
+
+  calculateDiv() {
+
+    const northY = this.cell.northCell.newFlowVector[1];
+    const southY = this.cell.southCell.newFlowVector[1];
+    const eastX = this.cell.eastCell.newFlowVector[0];
+    const westX = this.cell.westCell.newFlowVector[0];
+
+    this.cell.div = -0.5 * this.h * (eastX - westX + southY - northY);
+    this.cell.p = 0;
+  }
+
+  calculateP() {
+
+    const northP = this.cell.northCell.p;
+    const southP = this.cell.southCell.p;
+    const eastP = this.cell.eastCell.p;
+    const westP = this.cell.westCell.p;
+
+    this.cell.p = (this.cell.div + northP + southP + eastP + westP) / 4;
+  }
+
+  correctFlow() {
+    const northP = this.cell.northCell.p;
+    const southP = this.cell.southCell.p;
+    const eastP = this.cell.eastCell.p;
+    const westP = this.cell.westCell.p;
+
+    this.cell.newFlowVector = [0, 0];
   }
 }
 

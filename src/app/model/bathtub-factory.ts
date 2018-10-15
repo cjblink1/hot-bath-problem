@@ -47,7 +47,7 @@ export class BathtubFactory {
       .attr('width', cell => cell.columnWidth)
       .attr('height', cell => cell.rowHeight)
       .attr('minStrength', 0)
-      .attr('maxStrength', 5);
+      .attr('maxStrength', 1);
     return vectorMark;
   }
 

@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
   private bathtubFactory: BathtubFactory;
   private bathtub: Bathtub;
   protected avgTemp: number;
-  protected stddevTemp = 4;
+  protected stddevTemp: number;
 
   ngOnInit(): void {
     this.simulationRef = d3.select<HTMLCanvasElement, {}>('#simulation').node();

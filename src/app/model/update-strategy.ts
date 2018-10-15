@@ -24,8 +24,8 @@ export abstract class UpdateStrategy {
 
 export class Interior extends UpdateStrategy {
 
-  private a = .001;
-  private b = .001;
+  private a = .01;
+  private b = .01;
   private h = .01;
 
   diffuse() {

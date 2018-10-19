@@ -2,6 +2,9 @@ import { UpdateStrategy } from './update-strategy';
 
 export class BathtubCell {
 
+  public initialTemp: number;
+  public initialFlowVector: number[];
+
   public centerX: number;
   public centerY: number;
   public temp: number;
@@ -41,6 +44,8 @@ export class BathtubCell {
       this.newTemp = initialTemp;
       this.flowVector = initialFlowVector;
       this.newFlowVector = initialFlowVector;
+      this.initialTemp = initialTemp;
+      this.initialFlowVector = initialFlowVector;
       this.p = 0;
       this.div = 0;
   }
@@ -114,5 +119,13 @@ export class BathtubCell {
 
   commitFlow() {
     this.flowVector = this.newFlowVector;
+  }
+
+  reset() {
+    this.temp = this.initialTemp;
+    this.newTemp = this.initialTemp;
+    this.flowVector = this.initialFlowVector;
+    this.newFlowVector = this.initialFlowVector;
+    this.currentStrategy.reset();
   }
 }

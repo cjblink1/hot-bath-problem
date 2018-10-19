@@ -165,4 +165,11 @@ export class AppComponent implements OnInit {
     this.avgTemp = Math.round(avg);
     this.stddevTemp = Math.round(stddev);
   }
+
+  protected handleReset() {
+    this.bathtub.reset();
+    this.bathtub.commitFlow();
+    this.bathtub.commit();
+    this.bathtub.render();
+  }
 }

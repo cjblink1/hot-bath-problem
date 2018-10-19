@@ -3,7 +3,7 @@
   border: 2px;
   border-color: black;
   border-style: dotted;
-  height: calc(100% - 100px)
+  height: calc(100% - 100px);
 }
 
 #app {
@@ -11,4 +11,17 @@
   margin: auto;
   display: block;
   height: 100%;
+}
+
+#controls {
+  margin: auto;
+  display: flex;
+}
+
+#data {
+  display: block;
+}
+
+#space {
+  flex: 1 1 auto;
 }

@@ -1,4 +1,5 @@
 import { BathtubCell } from './bathtub-cell';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 export abstract class UpdateStrategy {
 
@@ -19,6 +20,7 @@ export abstract class UpdateStrategy {
   shouldAdvectFlow = () => false;
   setBoundary() {}
   setFlowBoundary() {}
+  reset() {}
 
 }
 
@@ -85,6 +87,11 @@ export class Interior extends UpdateStrategy {
     this.cell.newFlowVector[1] -= 0.5 * (southP - northP) / this.h;
   }
 
+  reset() {
+    this.cell.newFlowVector = [0 , 0];
+    this.cell.newTemp = this.cell.initialTemp;
+  }
+
 }
 
 export class Dirichlet extends UpdateStrategy {
@@ -131,6 +138,10 @@ export class Dirichlet extends UpdateStrategy {
 
     this.cell.newFlowVector = [0, 0];
   }
+
+  reset() {
+    this.cell.temp = this.temp;
+  }
 }
 
 export class Source extends UpdateStrategy {
@@ -147,6 +158,11 @@ export class Source extends UpdateStrategy {
   update() {
     this.cell.newTemp = this.temp;
     this.cell.newFlowVector = this.flowVector;
+  }
+
+  reset() {
+    this.cell.temp = this.temp;
+    this.cell.flowVector = this.flowVector;
   }
 
 }

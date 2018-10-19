@@ -14,6 +14,6 @@ mark FlowVector(
   let uScaled = Vector2(0.8*u.x*(width/2), 0.8*u.y*(height/2));
   let strength = length(baseVector);
   let alpha = (strength - minStrength) / (maxStrength - minStrength);
-  Line(uScaled + center, -uScaled + center, 2, Color(1, 0, 0, alpha));
+  Line(uScaled + center, -uScaled + center, 2, Color(1, 0, 0, 1));
 }
 `;

@@ -210,4 +210,8 @@ export class Bathtub {
     return Math.sqrt(this.cells.reduce((accumulator, cell) => accumulator + Math.pow(cell.temp - avgTemp, 2), 0) / this.cells.length);
   }
 
+  reset() {
+    this.cells.forEach(cell => cell.reset());
+  }
+
 }

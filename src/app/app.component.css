@@ -14,16 +14,17 @@
 }
 
 #controls {
-  margin: auto;
-  display: flex;
+  /* margin: auto; */
+  /* display: inline-block; */
 }
 
 #data {
-  display: block;
+  /* display: block; */
+  margin-right: 5px;
 }
 
 #space {
-  flex: 1 1 auto;
+  /* flex: 1 1 auto; */
 }
 
 button {

@@ -101,7 +101,7 @@ export class Bathtub {
   }
 
   diffuseFlow() {
-    for (let k = 0; k < 20; k++) {
+    for (let k = 0; k < 10; k++) {
       this.cells.forEach(cell => {
         cell.diffuseFlow();
       });
@@ -155,7 +155,7 @@ export class Bathtub {
         cell.calculateDiv();
       }
     });
-    for (let k = 0; k < 20; k++) {
+    for (let k = 0; k < 10; k++) {
       this.cells.forEach(cell => {
         cell.calculateP();
       });

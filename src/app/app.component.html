@@ -4,6 +4,18 @@
     <div id="data">
         <span style="font-weight: bold">Avg Temp:</span> {{ this.avgTemp }} <span style="font-weight: bold">Std Dev:</span> {{ this.stddevTemp }}
     </div>
+    <mat-form-field>
+      <input matInput type="number" placeholder="Source Flow Speed">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="number" placeholder="Water Density">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="number" placeholder="Body Temperature">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="number" placeholder="Initial Tub Temperature">
+    </mat-form-field>
     <span id="space"></span>
     <button mat-raised-button color="primary" (click)="handleExplain()">Explain</button>
     <button mat-raised-button color="primary" (click)="handleReset()"><mat-icon>refresh</mat-icon></button>

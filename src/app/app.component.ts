@@ -78,7 +78,7 @@ export class AppComponent implements OnInit {
 
       this.execute(steps, false);
       this.updateStats();
-      // if (elapsed > 15000) {
+      // if (elapsed > 16000) {
       //   timer.stop();
       // }
     });

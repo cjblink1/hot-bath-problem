@@ -5,6 +5,8 @@ import { Bathtub } from './model/bathtub';
 import { executeAndMeasure } from './model/utilities';
 import { BottomBoundary, LeftBoundary, RightBoundary, TopBoundary, TopLeftBoundary,
    BottomLeftBoundary, BottomRightBoundary, TopRightBoundary, Interior, UpdateStrategy, Dirichlet, Source } from './model/update-strategy';
+import { MatDialog } from '@angular/material';
+import { ExplainDialogComponent } from './explain-dialog/explain-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +28,8 @@ export class AppComponent implements OnInit {
   private bathtub: Bathtub;
   protected avgTemp: number;
   protected stddevTemp: number;
+
+  constructor(private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.simulationRef = d3.select<HTMLCanvasElement, {}>('#simulation').node();
@@ -171,5 +175,9 @@ export class AppComponent implements OnInit {
     this.bathtub.commitFlow();
     this.bathtub.commit();
     this.bathtub.render();
+  }
+
+  protected handleExplain() {
+    const dialogRef = this.dialog.open(ExplainDialogComponent);
   }
 }

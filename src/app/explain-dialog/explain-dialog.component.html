@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>Parameter Values</h1>
+<div mat-dialog-content>
+    <ng-katex equation="\dfrac{\partial v}{\partial t} = \beta\triangle v - (v \cdot \nabla)v - \dfrac{1}{p_0}\nabla p"></ng-katex><br/>
+    <ng-katex equation="\dfrac{\partial T}{\partial t} = \alpha\triangle T - (v \cdot \nabla)T"></ng-katex><br/>
+    <ng-katex equation="h_A(T_S - T_A) = kA\dfrac{\partial T_S}{\partial y}"></ng-katex>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Close</button>
+  <!-- <button mat-button [mat-dialog-close]="data.animal" cdkFocusInitial>Ok</button> -->
+</div>

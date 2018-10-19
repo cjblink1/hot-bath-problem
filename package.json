@@ -26,6 +26,8 @@
     "core-js": "^2.5.4",
     "d3": "^5.0.0",
     "hammerjs": "^2.0.8",
+    "mathjax": "^2.7.5",
+    "ng-katex": "^1.0.3",
     "rxjs": "~6.2.0",
     "stardust-core": "^0.1.1",
     "stardust-webgl": "^0.1.1",

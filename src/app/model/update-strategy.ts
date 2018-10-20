@@ -1,5 +1,6 @@
 import { BathtubCell } from './bathtub-cell';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { Subject } from 'rxjs';
+import { scaleVectorToLength } from './utilities';
 
 export abstract class UpdateStrategy {
 
@@ -20,7 +21,11 @@ export abstract class UpdateStrategy {
   shouldAdvectFlow = () => false;
   setBoundary() {}
   setFlowBoundary() {}
-  reset() {}
+
+  reset() {
+    this.cell.newFlowVector = [0 , 0];
+    this.cell.newTemp = this.cell.initialTemp;
+  }
 
 }
 
@@ -86,12 +91,6 @@ export class Interior extends UpdateStrategy {
     this.cell.newFlowVector[0] -= 0.5 * (eastP - westP) / this.h;
     this.cell.newFlowVector[1] -= 0.5 * (southP - northP) / this.h;
   }
-
-  reset() {
-    this.cell.newFlowVector = [0 , 0];
-    this.cell.newTemp = this.cell.initialTemp;
-  }
-
 }
 
 export class Dirichlet extends UpdateStrategy {
@@ -99,9 +98,10 @@ export class Dirichlet extends UpdateStrategy {
   private temp: number;
   private h = .01;
 
-  constructor(temp: number) {
+  constructor(temp: number, bodyTempSubject: Subject<number>) {
     super();
     this.temp = temp;
+    bodyTempSubject.subscribe((newTemp) => this.temp = newTemp);
   }
 
   update() {
@@ -148,21 +148,35 @@ export class Source extends UpdateStrategy {
 
   private temp: number;
   private flowVector: [number, number];
+  private initialFlowFector: [number, number];
 
-  constructor(temp: number, flowVector: [number, number]) {
+  constructor(temp: number, flowVector: [number, number], sourceFlowSpeedSubject: Subject<number>, sourceTempSubject: Subject<number>) {
     super();
     this.temp = temp;
     this.flowVector = flowVector;
+    this.initialFlowFector = flowVector;
+    sourceFlowSpeedSubject.subscribe((newSpeed) => this.setSourceFlowSpeed(newSpeed));
+    sourceTempSubject.subscribe((newTemp) => this.temp = newTemp);
   }
 
   update() {
     this.cell.newTemp = this.temp;
     this.cell.newFlowVector = this.flowVector;
+    if (Number.isNaN(this.cell.newFlowVector[0]) || Number.isNaN(this.cell.newFlowVector[1])) {
+      throw Error('Error updating flow vector');
+    }
   }
 
   reset() {
     this.cell.temp = this.temp;
     this.cell.flowVector = this.flowVector;
+  }
+
+  private setSourceFlowSpeed(sourceFlowSpeed: number) {
+    this.flowVector = scaleVectorToLength(this.initialFlowFector, sourceFlowSpeed);
+    if (Number.isNaN(this.flowVector[0]) || Number.isNaN(this.flowVector[1])) {
+      throw Error('Error updating flow vector');
+    }
   }
 
 }
@@ -274,8 +288,11 @@ export class TopLeftBoundary extends UpdateStrategy {
   }
 
   correctFlow() {
-    const avgX = this.cell.eastCell.newFlowVector[0] + this.cell.southCell.newFlowVector[0];
-    const avgY = this.cell.eastCell.newFlowVector[1] + this.cell.southCell.newFlowVector[1];
+    const avgX = (this.cell.eastCell.newFlowVector[0] + this.cell.southCell.newFlowVector[0]) / 2;
+    const avgY = (this.cell.eastCell.newFlowVector[1] + this.cell.southCell.newFlowVector[1]) / 2;
+    if (Number.isNaN(avgX) || Number.isNaN(avgY)) {
+      throw Error('Error setting avg values');
+    }
     this.cell.newFlowVector = [avgX, avgY];
   }
 }
@@ -296,8 +313,8 @@ export class TopRightBoundary extends UpdateStrategy {
   }
 
   correctFlow() {
-    const avgX = this.cell.westCell.newFlowVector[0] + this.cell.southCell.newFlowVector[0];
-    const avgY = this.cell.westCell.newFlowVector[1] + this.cell.southCell.newFlowVector[1];
+    const avgX = (this.cell.westCell.newFlowVector[0] + this.cell.southCell.newFlowVector[0]) / 2;
+    const avgY = (this.cell.westCell.newFlowVector[1] + this.cell.southCell.newFlowVector[1]) / 2;
     this.cell.newFlowVector = [avgX, avgY];
   }
 }
@@ -318,8 +335,8 @@ export class BottomLeftBoundary extends UpdateStrategy {
   }
 
   correctFlow() {
-    const avgX = this.cell.eastCell.newFlowVector[0] + this.cell.northCell.newFlowVector[0];
-    const avgY = this.cell.eastCell.newFlowVector[1] + this.cell.northCell.newFlowVector[1];
+    const avgX = (this.cell.eastCell.newFlowVector[0] + this.cell.northCell.newFlowVector[0]) / 2;
+    const avgY = (this.cell.eastCell.newFlowVector[1] + this.cell.northCell.newFlowVector[1]) / 2;
     this.cell.newFlowVector = [avgX, avgY];
   }
 }
@@ -340,8 +357,8 @@ export class BottomRightBoundary extends UpdateStrategy {
   }
 
   correctFlow() {
-    const avgX = this.cell.westCell.newFlowVector[0] + this.cell.northCell.newFlowVector[0];
-    const avgY = this.cell.westCell.newFlowVector[1] + this.cell.northCell.newFlowVector[1];
+    const avgX = (this.cell.westCell.newFlowVector[0] + this.cell.northCell.newFlowVector[0]) / 2;
+    const avgY = (this.cell.westCell.newFlowVector[1] + this.cell.northCell.newFlowVector[1]) / 2;
     this.cell.newFlowVector = [avgX, avgY];
   }
 }

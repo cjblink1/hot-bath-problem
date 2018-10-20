@@ -5,6 +5,7 @@ import * as Stardust from 'stardust-core';
 import { WebGLCanvasPlatform2D } from 'stardust-webgl';
 import { tempToColor } from './utilities';
 import { vectorMarkCode } from './vector-mark';
+import { Subject } from 'rxjs';
 
 
 export class BathtubFactory {
@@ -58,17 +59,21 @@ export class BathtubFactory {
     return newBathtub;
   }
 
-  createRandomBathtubCell(centerX: number, centerY: number, initialTemp: number, initialFlowVector: number[] = [0, 0]) {
-    return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, new Random());
+  createRandomBathtubCell(centerX: number, centerY: number, initialTemp: number, initialFlowVector: number[] = [0, 0],
+    tubTempSubject: Subject<number>) {
+    return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, tubTempSubject, new Random());
   }
 
-  createInteriorBathtubCell(centerX: number, centerY: number, initialTemp: number, initialFlowVector: number[] = [0, 0]) {
-    return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, new Interior());
+  createInteriorBathtubCell(centerX: number, centerY: number, initialTemp: number, initialFlowVector: number[] = [0, 0],
+    tubTempSubject: Subject<number>) {
+    return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, tubTempSubject, new Interior());
   }
 
   createBathtubCell(centerX: number, centerY: number,
-    initialTemp: number, initialFlowVector: number[], ...updateStrategies: UpdateStrategy[]) {
-    return new BathtubCell(centerX, centerY, this.columnWidth, this.rowHeight, initialTemp, initialFlowVector, ...updateStrategies);
+    initialTemp: number, initialFlowVector: number[],
+    tubTempSubject: Subject<number>, ...updateStrategies: UpdateStrategy[]) {
+    return new BathtubCell(centerX, centerY, this.columnWidth, this.rowHeight, initialTemp,
+      initialFlowVector, tubTempSubject, ...updateStrategies);
   }
 
 }

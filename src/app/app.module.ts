@@ -7,6 +7,7 @@ import { KatexModule } from 'ng-katex';
 
 import { AppComponent } from './app.component';
 import { ExplainDialogComponent } from './explain-dialog/explain-dialog.component';
+import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
@@ -20,6 +21,7 @@ import { ExplainDialogComponent } from './explain-dialog/explain-dialog.componen
     MatFormFieldModule,
     MatDialogModule,
     MatInputModule,
+    FormsModule,
     KatexModule
   ],
   providers: [],

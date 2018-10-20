@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, NgZone } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as d3 from 'd3';
 import { BathtubFactory } from './model/bathtub-factory';
 import { Bathtub } from './model/bathtub';
@@ -7,6 +7,7 @@ import { BottomBoundary, LeftBoundary, RightBoundary, TopBoundary, TopLeftBounda
    BottomLeftBoundary, BottomRightBoundary, TopRightBoundary, Interior, UpdateStrategy, Dirichlet, Source } from './model/update-strategy';
 import { MatDialog } from '@angular/material';
 import { ExplainDialogComponent } from './explain-dialog/explain-dialog.component';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -26,8 +27,17 @@ export class AppComponent implements OnInit {
   private startingY;
   private bathtubFactory: BathtubFactory;
   private bathtub: Bathtub;
+  private sourceFlowSpeedSubject = new Subject<number>();
+  private sourceTempSubject = new Subject<number>();
+  private tubTempSubject = new Subject<number>();
+  private bodyTempSubject = new Subject<number>();
   protected avgTemp: number;
   protected stddevTemp: number;
+
+  protected sourceFlowSpeed = 1;
+  protected sourceTemp = 255;
+  protected tubTemp = 50;
+  protected bodyTemp = 200;
 
   constructor(private dialog: MatDialog) {}
 
@@ -114,7 +124,8 @@ export class AppComponent implements OnInit {
 
   private buildTop() {
     for (let i = 1; i < this.cols - 1; i++) {
-      this.createAndAddCell(0, i, 0, [0, 0], new TopBoundary(), new Source(255, [0, 1]));
+      this.createAndAddCell(0, i, 0, [0, 0], new TopBoundary(), new Source(255, [0, 1],
+        this.sourceFlowSpeedSubject, this.sourceTempSubject));
     }
   }
 
@@ -128,7 +139,7 @@ export class AppComponent implements OnInit {
   private fillInterior() {
     for (let j = 1; j < this.rows - 1; j++) {
       for (let i = 1; i < this.cols - 1; i++) {
-        this.createAndAddCell(j, i, 50, [0, 0], new Interior(), new Dirichlet(200));
+        this.createAndAddCell(j, i, 50, [0, 0], new Interior(), new Dirichlet(200, this.bodyTempSubject));
       }
     }
   }
@@ -136,7 +147,8 @@ export class AppComponent implements OnInit {
   private createAndAddCell(row: number, col: number, temp: number, flowVector: [number, number], ...updateStrategies: UpdateStrategy[]) {
     const centerX = this.startingX + col * this.columnWidth;
     const centerY = this.startingY + row * this.rowHeight;
-    const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, temp, flowVector, ...updateStrategies);
+    const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, temp, flowVector,
+      this.tubTempSubject, ...updateStrategies);
     this.bathtub.addCell(cell, row, col);
   }
 
@@ -178,6 +190,22 @@ export class AppComponent implements OnInit {
   }
 
   protected handleExplain() {
-    const dialogRef = this.dialog.open(ExplainDialogComponent);
+    this.dialog.open(ExplainDialogComponent);
+  }
+
+  protected handleSourceFlowSpeedChange() {
+    this.sourceFlowSpeedSubject.next(this.sourceFlowSpeed);
+  }
+
+  protected handleSourceTempChange() {
+    this.sourceTempSubject.next(this.sourceTemp);
+  }
+
+  protected handleTubTempChange() {
+    this.tubTempSubject.next(this.tubTemp);
+  }
+
+  protected handleBodyTempChange() {
+    this.bodyTempSubject.next(this.bodyTemp);
   }
 }

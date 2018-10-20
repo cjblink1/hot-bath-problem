@@ -5,16 +5,19 @@
         <span style="font-weight: bold">Avg Temp:</span> {{ this.avgTemp }} <span style="font-weight: bold">Std Dev:</span> {{ this.stddevTemp }}
     </div>
     <mat-form-field>
-      <input matInput type="number" placeholder="Source Flow Speed">
+      <input matInput type="number" step="0.1" placeholder="Source Flow Speed" [(ngModel)]="sourceFlowSpeed" (input)="handleSourceFlowSpeedChange()" >
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput type="number" step="5" placeholder="Source Temperature" [(ngModel)]="sourceTemp" (input)="handleSourceTempChange()" >
     </mat-form-field>
     <mat-form-field>
       <input matInput type="number" placeholder="Water Density">
     </mat-form-field>
     <mat-form-field>
-      <input matInput type="number" placeholder="Body Temperature">
+      <input matInput type="number" step="5" placeholder="Body Temperature" [(ngModel)]="bodyTemp" (input)="handleBodyTempChange()">
     </mat-form-field>
     <mat-form-field>
-      <input matInput type="number" placeholder="Initial Tub Temperature">
+      <input matInput type="number" step="5" placeholder="Initial Tub Temperature" [(ngModel)]="tubTemp" (input)="handleTubTempChange()">
     </mat-form-field>
     <span id="space"></span>
     <button mat-raised-button color="primary" (click)="handleExplain()">Explain</button>

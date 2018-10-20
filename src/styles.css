@@ -12,3 +12,7 @@ body {
   border-width: 25px;
   border-color: red;
 }
+
+.base {
+  margin-bottom: 5px;
+}

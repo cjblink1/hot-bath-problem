@@ -1,4 +1,5 @@
 import { UpdateStrategy } from './update-strategy';
+import { Subject } from 'rxjs';
 
 export class BathtubCell {
 
@@ -30,6 +31,7 @@ export class BathtubCell {
     rowHeight: number,
     initialTemp: number,
     initialFlowVector: number[],
+    tubTempSubject: Subject<number>,
     ...updateStrategies: UpdateStrategy[]
     ) {
       this.centerX = centerX;
@@ -48,6 +50,7 @@ export class BathtubCell {
       this.initialFlowVector = initialFlowVector;
       this.p = 0;
       this.div = 0;
+      tubTempSubject.subscribe((newInitialTemp) => this.initialTemp = newInitialTemp);
   }
 
   setNorth(northCell: BathtubCell) {
@@ -118,6 +121,9 @@ export class BathtubCell {
   }
 
   commitFlow() {
+    if (Number.isNaN(this.newFlowVector[0]) || Number.isNaN(this.newFlowVector[1])) {
+      throw Error(`Attempted to commit flow vector: (${this.newFlowVector[0]}, ${this.newFlowVector[1]})`);
+    }
     this.flowVector = this.newFlowVector;
   }
 

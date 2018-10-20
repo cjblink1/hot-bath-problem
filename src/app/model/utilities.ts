@@ -17,3 +17,11 @@ export function executeAndMeasure(name: string, f: () => void, obj): number {
   console.log(name + ' took: ' + duration);
   return duration;
 }
+
+export function scaleVectorToLength(vector: [number, number], length: number): [number, number] {
+  const proportion = length / Math.sqrt(vector.reduce((accumulator, element) => accumulator + Math.pow(element, 2), 0));
+  if (Number.isNaN(proportion) || !Number.isFinite(proportion)) {
+    return vector;
+  }
+  return [proportion * vector[0], proportion * vector[1]];
+}

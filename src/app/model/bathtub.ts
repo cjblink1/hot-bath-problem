@@ -109,8 +109,8 @@ export class Bathtub {
   }
 
   advectFlow() {
-    for (let j = 0; j < this.rows; j++) {
-      for (let i = 0; i < this.cols; i++) {
+    for (let j = 1; j < (this.rows - 1); j++) {
+      for (let i = 1; i < (this.cols - 1); i++) {
         const currentCell = this.getCell(j, i);
         if (currentCell.shouldAdvectFlow()) {
           let sourceX = i - currentCell.flowVector[0];
@@ -142,6 +142,10 @@ export class Bathtub {
                                         lowerXBias * upperYBias * this.getCell(upperY, lowerX).flowVector[1] +
                                         upperXBias * lowerYBias * this.getCell(lowerY, upperX).flowVector[1] +
                                         upperXBias * upperYBias * this.getCell(upperY, upperX).flowVector[1];
+
+          if (Number.isNaN(currentCell.newFlowVector[0]) || Number.isNaN(currentCell.newFlowVector[1])) {
+            throw Error(`Attempted to set new flow to (${currentCell.newFlowVector})`);
+          }
         } else {
           currentCell.setFlowBoundary();
         }
@@ -176,7 +180,7 @@ export class Bathtub {
   }
 
   commitFlow() {
-    this.cells.forEach(cell => {
+    this.cells.forEach((cell, index) => {
       if (cell) {
         cell.commitFlow();
       }
@@ -191,6 +195,9 @@ export class Bathtub {
   }
 
   getCell(row: number, column: number): BathtubCell {
+    if (!Number.isSafeInteger(row) || !Number.isSafeInteger(column)) {
+      throw Error(`Can't get cell at (${row},${column}).`);
+    }
     return this.cells[row * this.cols + column];
   }
 

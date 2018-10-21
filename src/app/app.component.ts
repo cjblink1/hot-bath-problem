@@ -31,13 +31,15 @@ export class AppComponent implements OnInit {
   private sourceTempSubject = new Subject<number>();
   private tubTempSubject = new Subject<number>();
   private bodyTempSubject = new Subject<number>();
+  private waterDensitySubject = new Subject<number>();
   protected avgTemp: number;
   protected stddevTemp: number;
 
   protected sourceFlowSpeed = 1;
-  protected sourceTemp = 255;
-  protected tubTemp = 50;
-  protected bodyTemp = 200;
+  protected sourceTemp = 100;
+  protected tubTemp = 80;
+  protected bodyTemp = 98.6;
+  protected waterDensity = 997;
 
   constructor(private dialog: MatDialog) {}
 
@@ -53,7 +55,8 @@ export class AppComponent implements OnInit {
     this.startingX = this.cx - this.columnWidth * ((this.cols - 1) / 2);
     this.startingY = this.cy - this.rowHeight * ((this.rows - 1) / 2);
 
-    this.bathtubFactory = new BathtubFactory(this.simulationRef, this.cols, this.rows, this.columnWidth, this.rowHeight);
+    this.bathtubFactory = new BathtubFactory(this.simulationRef, this.cols, this.rows,
+      this.columnWidth, this.rowHeight, this.waterDensity, this.tubTempSubject, this.waterDensitySubject);
     this.bathtub = this.bathtubFactory.createBathtub();
 
     this.buildLeftWall();
@@ -106,40 +109,40 @@ export class AppComponent implements OnInit {
 
   private buildLeftWall() {
     for (let i = 1; i < this.rows - 1; i++) {
-      this.createAndAddCell(i, 0, 0, [0, 0], new LeftBoundary());
+      this.createAndAddCell(i, 0, this.tubTemp, [0, 0], new LeftBoundary());
     }
   }
 
   private buildRightWall() {
     for (let i = 1; i < this.rows - 1; i++) {
-      this.createAndAddCell(i, this.cols - 1, 0, [0, 0], new RightBoundary());
+      this.createAndAddCell(i, this.cols - 1, this.tubTemp, [0, 0], new RightBoundary());
     }
   }
 
   private buildBottom() {
     for (let i = 1; i < this.cols - 1; i++) {
-      this.createAndAddCell(this.rows - 1, i, 0, [0, 0], new BottomBoundary());
+      this.createAndAddCell(this.rows - 1, i, this.tubTemp, [0, 0], new BottomBoundary());
     }
   }
 
   private buildTop() {
     for (let i = 1; i < this.cols - 1; i++) {
-      this.createAndAddCell(0, i, 0, [0, 0], new TopBoundary(), new Source(255, [0, 1],
+      this.createAndAddCell(0, i, this.tubTemp, [0, 0], new TopBoundary(), new Source(this.sourceTemp, [0, 1],
         this.sourceFlowSpeedSubject, this.sourceTempSubject));
     }
   }
 
   private buildCorners() {
-    this.createAndAddCell(0, 0, 0, [0, 0], new TopLeftBoundary());
-    this.createAndAddCell(this.rows - 1, 0, 0, [0, 0], new BottomLeftBoundary());
-    this.createAndAddCell(this.rows - 1, this.cols - 1, 0, [0, 0], new BottomRightBoundary());
-    this.createAndAddCell(0, this.cols - 1, 0, [0, 0], new TopRightBoundary());
+    this.createAndAddCell(0, 0, this.tubTemp, [0, 0], new TopLeftBoundary());
+    this.createAndAddCell(this.rows - 1, 0, this.tubTemp, [0, 0], new BottomLeftBoundary());
+    this.createAndAddCell(this.rows - 1, this.cols - 1, this.tubTemp, [0, 0], new BottomRightBoundary());
+    this.createAndAddCell(0, this.cols - 1, this.tubTemp, [0, 0], new TopRightBoundary());
   }
 
   private fillInterior() {
     for (let j = 1; j < this.rows - 1; j++) {
       for (let i = 1; i < this.cols - 1; i++) {
-        this.createAndAddCell(j, i, 50, [0, 0], new Interior(), new Dirichlet(200, this.bodyTempSubject));
+        this.createAndAddCell(j, i, this.tubTemp, [0, 0], new Interior(), new Dirichlet(200, this.bodyTempSubject));
       }
     }
   }
@@ -147,8 +150,7 @@ export class AppComponent implements OnInit {
   private createAndAddCell(row: number, col: number, temp: number, flowVector: [number, number], ...updateStrategies: UpdateStrategy[]) {
     const centerX = this.startingX + col * this.columnWidth;
     const centerY = this.startingY + row * this.rowHeight;
-    const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, temp, flowVector,
-      this.tubTempSubject, ...updateStrategies);
+    const cell = this.bathtubFactory.createBathtubCell(centerX, centerY, temp, flowVector, ...updateStrategies);
     this.bathtub.addCell(cell, row, col);
   }
 
@@ -194,18 +196,32 @@ export class AppComponent implements OnInit {
   }
 
   protected handleSourceFlowSpeedChange() {
-    this.sourceFlowSpeedSubject.next(this.sourceFlowSpeed);
+    if (!Number.isNaN(this.waterDensity)) {
+      this.sourceFlowSpeedSubject.next(this.sourceFlowSpeed);
+    }
   }
 
   protected handleSourceTempChange() {
-    this.sourceTempSubject.next(this.sourceTemp);
+    if (!Number.isNaN(this.waterDensity)) {
+      this.sourceTempSubject.next(this.sourceTemp);
+    }
   }
 
   protected handleTubTempChange() {
-    this.tubTempSubject.next(this.tubTemp);
+    if (!Number.isNaN(this.waterDensity)) {
+      this.tubTempSubject.next(this.tubTemp);
+    }
   }
 
   protected handleBodyTempChange() {
-    this.bodyTempSubject.next(this.bodyTemp);
+    if (!Number.isNaN(this.waterDensity)) {
+      this.bodyTempSubject.next(this.bodyTemp);
+    }
+  }
+
+  protected handleWaterDensityChange() {
+    if (!Number.isNaN(this.waterDensity)) {
+      this.waterDensitySubject.next(this.waterDensity);
+    }
   }
 }

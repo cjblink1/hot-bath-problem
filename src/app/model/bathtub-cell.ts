@@ -14,6 +14,7 @@ export class BathtubCell {
   public newFlowVector: number[];
   public div: number;
   public p: number;
+  public waterDensity: number;
   public columnWidth: number;
   public rowHeight: number;
   public northCell: BathtubCell;
@@ -31,7 +32,9 @@ export class BathtubCell {
     rowHeight: number,
     initialTemp: number,
     initialFlowVector: number[],
+    initialWaterDensity: number,
     tubTempSubject: Subject<number>,
+    waterDensitySubject: Subject<number>,
     ...updateStrategies: UpdateStrategy[]
     ) {
       this.centerX = centerX;
@@ -50,7 +53,9 @@ export class BathtubCell {
       this.initialFlowVector = initialFlowVector;
       this.p = 0;
       this.div = 0;
+      this.waterDensity = initialWaterDensity;
       tubTempSubject.subscribe((newInitialTemp) => this.initialTemp = newInitialTemp);
+      waterDensitySubject.subscribe((newWaterDensity) => this.waterDensity = newWaterDensity);
   }
 
   setNorth(northCell: BathtubCell) {

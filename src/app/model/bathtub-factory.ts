@@ -15,11 +15,15 @@ export class BathtubFactory {
   private rows: number;
   private columnWidth: number;
   private rowHeight: number;
+  private initialWaterDensity;
   private cellMark: Stardust.Mark;
   private vectorMark: Stardust.Mark;
+  private tubTempSubject: Subject<number>;
+  private waterDensitySubject: Subject<number>;
 
   constructor (simulationRef: HTMLCanvasElement,
-    cols: number, rows: number, columnWidth: number, rowHeight: number) {
+    cols: number, rows: number, columnWidth: number, rowHeight: number, initialWaterDensity: number,
+    tubTempSubject: Subject<number>, waterDensitySubject: Subject<number>) {
       const width = simulationRef.getBoundingClientRect().width;
       const height = simulationRef.getBoundingClientRect().height;
       this.platform = new WebGLCanvasPlatform2D(simulationRef, width, height);
@@ -27,8 +31,11 @@ export class BathtubFactory {
       this.rows = rows;
       this.columnWidth = columnWidth;
       this.rowHeight = rowHeight;
+      this.initialWaterDensity = initialWaterDensity;
       this.cellMark = this.createCellMark();
       this.vectorMark = this.createVectorMark();
+      this.tubTempSubject = tubTempSubject;
+      this.waterDensitySubject = waterDensitySubject;
   }
 
   private createCellMark(): Stardust.Mark {
@@ -61,19 +68,17 @@ export class BathtubFactory {
 
   createRandomBathtubCell(centerX: number, centerY: number, initialTemp: number, initialFlowVector: number[] = [0, 0],
     tubTempSubject: Subject<number>) {
-    return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, tubTempSubject, new Random());
+    return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, new Random());
   }
 
-  createInteriorBathtubCell(centerX: number, centerY: number, initialTemp: number, initialFlowVector: number[] = [0, 0],
-    tubTempSubject: Subject<number>) {
-    return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, tubTempSubject, new Interior());
+  createInteriorBathtubCell(centerX: number, centerY: number, initialTemp: number, initialFlowVector: number[] = [0, 0]) {
+    return this.createBathtubCell(centerX, centerY, initialTemp, initialFlowVector, new Interior());
   }
 
   createBathtubCell(centerX: number, centerY: number,
-    initialTemp: number, initialFlowVector: number[],
-    tubTempSubject: Subject<number>, ...updateStrategies: UpdateStrategy[]) {
+    initialTemp: number, initialFlowVector: number[], ...updateStrategies: UpdateStrategy[]) {
     return new BathtubCell(centerX, centerY, this.columnWidth, this.rowHeight, initialTemp,
-      initialFlowVector, tubTempSubject, ...updateStrategies);
+      initialFlowVector, this.initialWaterDensity, this.tubTempSubject, this.waterDensitySubject, ...updateStrategies);
   }
 
 }

@@ -31,20 +31,20 @@ export abstract class UpdateStrategy {
 
 export class Interior extends UpdateStrategy {
 
-  private a = .01;
-  private b = .01;
   private h = .01;
 
   diffuse() {
+    const a = (0.54402 + 0.000816 * this.cell.temp) / (this.cell.waterDensity * 4.18);
     const northTemp = this.cell.northCell.newTemp;
     const southTemp = this.cell.southCell.newTemp;
     const eastTemp = this.cell.eastCell.newTemp;
     const westTemp = this.cell.westCell.newTemp;
 
-    this.cell.newTemp = (this.cell.temp + this.a * (northTemp + southTemp + eastTemp + westTemp)) / (1 + 4 * this.a);
+    this.cell.newTemp = (this.cell.temp + a * (northTemp + southTemp + eastTemp + westTemp)) / (1 + 4 * a);
   }
 
   diffuseFlow() {
+    const b = (.000016 * 997) / this.cell.waterDensity;
     const northX = this.cell.northCell.flowVector[0];
     const northY = this.cell.northCell.flowVector[1];
     const southX = this.cell.southCell.flowVector[0];
@@ -54,8 +54,11 @@ export class Interior extends UpdateStrategy {
     const westX = this.cell.westCell.flowVector[0];
     const westY = this.cell.westCell.flowVector[1];
 
-    this.cell.newFlowVector[0] = (this.cell.flowVector[0] + this.b * (northX + southX + eastX + westX)) / (1 + 4 * this.b);
-    this.cell.newFlowVector[1] = (this.cell.flowVector[1] + this.b * (northY + southY + eastY + westY)) / (1 + 4 * this.b);
+    this.cell.newFlowVector[0] = (this.cell.flowVector[0] + b * (northX + southX + eastX + westX)) / (1 + 4 * b);
+    this.cell.newFlowVector[1] = (this.cell.flowVector[1] + b * (northY + southY + eastY + westY)) / (1 + 4 * b);
+    if (Number.isNaN(this.cell.newFlowVector[0]) || Number.isNaN(this.cell.newFlowVector[1])) {
+      throw Error('Error in diffuse flow');
+    }
   }
 
   shouldAdvect = () => true;

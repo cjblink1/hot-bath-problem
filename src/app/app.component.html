@@ -11,7 +11,7 @@
       <input matInput type="number" step="5" placeholder="Source Temperature" [(ngModel)]="sourceTemp" (input)="handleSourceTempChange()" >
     </mat-form-field>
     <mat-form-field>
-      <input matInput type="number" placeholder="Water Density">
+      <input matInput type="number" step=".5" placeholder="Water Density" [(ngModel)]="waterDensity" (input)="handleWaterDensityChange()">
     </mat-form-field>
     <mat-form-field>
       <input matInput type="number" step="5" placeholder="Body Temperature" [(ngModel)]="bodyTemp" (input)="handleBodyTempChange()">

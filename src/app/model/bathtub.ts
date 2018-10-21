@@ -109,8 +109,8 @@ export class Bathtub {
   }
 
   advectFlow() {
-    for (let j = 1; j < (this.rows - 1); j++) {
-      for (let i = 1; i < (this.cols - 1); i++) {
+    for (let j = 0; j < this.rows; j++) {
+      for (let i = 0; i < this.cols; i++) {
         const currentCell = this.getCell(j, i);
         if (currentCell.shouldAdvectFlow()) {
           let sourceX = i - currentCell.flowVector[0];

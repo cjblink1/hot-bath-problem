@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: web-app
-        image: 'cjblink1/hot-bath-problem-web-app:master-6a0ad862703bca8b0f6ea081b20f4d5546d38f08'
+        image: 'cjblink1/hot-bath-problem-web-app:master-3259e1c1d207253dfe7df5c1d71e9ed2c088f562'
         ports:
         - containerPort: 80
 ---

@@ -34,7 +34,9 @@ export class Interior extends UpdateStrategy {
   private h = .01;
 
   diffuse() {
-    const a = (0.54402 + 0.000816 * this.cell.temp) / (this.cell.waterDensity * 4.18);
+    const deltaT = 1 / 60;
+    const deltaX = 4.5 / 100;
+    const a = (0.54402 + 0.000816 * this.cell.temp * deltaT) / (this.cell.waterDensity * 4.18 * deltaX * deltaX);
     const northTemp = this.cell.northCell.newTemp;
     const southTemp = this.cell.southCell.newTemp;
     const eastTemp = this.cell.eastCell.newTemp;
@@ -44,7 +46,9 @@ export class Interior extends UpdateStrategy {
   }
 
   diffuseFlow() {
-    const b = (.000016 * 997) / this.cell.waterDensity;
+    const deltaT = 1 / 60;
+    const deltaX = 4.5 / 100;
+    const b = (.000016 * 997 * deltaT) / (this.cell.waterDensity * deltaX * deltaX);
     const northX = this.cell.northCell.flowVector[0];
     const northY = this.cell.northCell.flowVector[1];
     const southX = this.cell.southCell.flowVector[0];

@@ -142,7 +142,7 @@ export class AppComponent implements OnInit {
   private fillInterior() {
     for (let j = 1; j < this.rows - 1; j++) {
       for (let i = 1; i < this.cols - 1; i++) {
-        this.createAndAddCell(j, i, this.tubTemp, [0, 0], new Interior(), new Dirichlet(200, this.bodyTempSubject));
+        this.createAndAddCell(j, i, this.tubTemp, [0, 0], new Interior(), new Dirichlet(this.bodyTemp, this.bodyTempSubject));
       }
     }
   }

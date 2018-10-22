@@ -1,11 +1,11 @@
 
 const cold = [0 / 255, 0 / 255, 60 / 255];
 const hot = [235 / 255, 245 / 255, 251 / 255];
-const slopes = hot.map((_, i) => (hot[i] - cold[i]) / 40);
+const slopes = hot.map((_, i) => (hot[i] - cold[i]) / 30);
 
 
 export function tempToColor(temp: number): Array<number> {
-  const result = slopes.map((slope, i) => cold[i] + slope * (temp - 70)).concat([1.0]);
+  const result = slopes.map((slope, i) => cold[i] + slope * (temp - 75)).concat([1.0]);
   return result;
 }
 

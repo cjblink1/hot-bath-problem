@@ -226,4 +226,10 @@ export class AppComponent implements OnInit {
       this.waterDensitySubject.next(this.waterDensity);
     }
   }
+
+  protected handleAirTempChange() {
+    if (!Number.isNaN(this.airTemp)) {
+      this.airTempSubject.next(this.airTemp);
+    }
+  }
 }

@@ -35,7 +35,7 @@ export class Interior extends UpdateStrategy {
 
   diffuse() {
     const deltaT = 1 / 60;
-    const deltaX = 4.5 / 100;
+    const deltaX = 10 / 100;
     const a = (0.54402 + 0.000816 * this.cell.temp * deltaT) / (this.cell.waterDensity * 4.18 * deltaX * deltaX);
     const northTemp = this.cell.northCell.newTemp;
     const southTemp = this.cell.southCell.newTemp;
@@ -47,7 +47,7 @@ export class Interior extends UpdateStrategy {
 
   diffuseFlow() {
     const deltaT = 1 / 60;
-    const deltaX = 4.5 / 100;
+    const deltaX = 10 / 100;
     const b = (.000016 * 997 * deltaT) / (this.cell.waterDensity * deltaX * deltaX);
     const northX = this.cell.northCell.flowVector[0];
     const northY = this.cell.northCell.flowVector[1];
@@ -261,8 +261,28 @@ export class RightBoundary extends UpdateStrategy {
 
 export class TopBoundary extends UpdateStrategy {
 
+  private airTemp: number;
+  private deltaY = 1.3716 / 100;
+  private h = 1000;
+
+  constructor(initialAirTemp: number, airTempSubject: Subject<number>) {
+    super();
+    this.airTemp = initialAirTemp;
+    airTempSubject.subscribe((newAirTemp) => this.airTemp = newAirTemp);
+  }
+
   setBoundary() {
-    this.cell.newTemp = this.cell.southCell.newTemp;
+    if (Number.isNaN(this.cell.southCell.newTemp)) {
+      this.cell.newTemp = this.cell.southCell.newTemp;
+      return;
+    }
+    const dTdy = (this.cell.southCell.newTemp - this.cell.temp) / (this.deltaY);
+    const k = 0.54402 + 0.000816 * this.cell.temp;
+    this.cell.newTemp = this.airTemp - k * dTdy / this.h;
+    if (Number.isNaN(this.cell.newTemp)) {
+      throw Error('Error setting new temp');
+    }
+    // this.cell.newTemp = this.cell.southCell.newTemp;
   }
 
   calculateDiv() {

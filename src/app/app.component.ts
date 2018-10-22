@@ -32,6 +32,7 @@ export class AppComponent implements OnInit {
   private tubTempSubject = new Subject<number>();
   private bodyTempSubject = new Subject<number>();
   private waterDensitySubject = new Subject<number>();
+  private airTempSubject = new Subject<number>();
   protected avgTemp: number;
   protected stddevTemp: number;
 
@@ -40,6 +41,7 @@ export class AppComponent implements OnInit {
   protected tubTemp = 80;
   protected bodyTemp = 98.6;
   protected waterDensity = 997;
+  protected airTemp = 80;
 
   constructor(private dialog: MatDialog) {}
 
@@ -127,8 +129,8 @@ export class AppComponent implements OnInit {
 
   private buildTop() {
     for (let i = 1; i < this.cols - 1; i++) {
-      this.createAndAddCell(0, i, this.tubTemp, [0, 0], new TopBoundary(), new Source(this.sourceTemp, [0, 1],
-        this.sourceFlowSpeedSubject, this.sourceTempSubject));
+      this.createAndAddCell(0, i, this.tubTemp, [0, 0], new TopBoundary(this.airTemp, this.airTempSubject),
+      new Source(this.sourceTemp, [0, 1], this.sourceFlowSpeedSubject, this.sourceTempSubject));
     }
   }
 

@@ -13,6 +13,7 @@ script:
   # - echo $PATH
   - mv kubectl ~/bin/kubectl
   - kubectl config set-cluster kubernetes --server=${CLUSTER_ADDRESS}
-  - kubectl config set-context --current --cluster=kubernetes
+  - kubectl config set-context kubernetes --cluster=kubernetes
+  - kubectl config use-context kubernetes
   - kubectl version
 

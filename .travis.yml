@@ -12,5 +12,6 @@ script:
   - chmod +x kubectl
   # - echo $PATH
   - mv kubectl ~/bin/kubectl
+  - kubectl set cluster srtsign.in --server=${CLUSTER_ADDRESS}
   - kubectl version
 

@@ -12,6 +12,7 @@ script:
   - chmod +x kubectl
   # - echo $PATH
   - mv kubectl ~/bin/kubectl
-  - kubectl config set-cluster srtsign.in --server=${CLUSTER_ADDRESS}
+  - kubectl config set-cluster kubernetes --server=${CLUSTER_ADDRESS}
+  - kubectl config set-context --current --cluster=kubernetes
   - kubectl version
 

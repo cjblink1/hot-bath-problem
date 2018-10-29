@@ -16,5 +16,6 @@ script:
   - kubectl config set clusters.cluster.certificate-authority-data ${CA_DATA} --set-raw-bytes
   - kubectl config set-context kubernetes --cluster=kubernetes
   - kubectl config use-context kubernetes
+  - kubectl config view
   - kubectl version
 
